@@ -3,8 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:xendly_mobile/controller/core/constants.dart';
 
 class UserAuth {
-<<<<<<< HEAD
-=======
   String _parseValidationError(dynamic data) {
     if (data is List) {
       return data[0];
@@ -62,7 +60,6 @@ class UserAuth {
     }
   }
 
->>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
   // === REGISTER A USER === //
   Future<Map<String, dynamic>> registerUser(Map<String, dynamic> data) async {
     try {
@@ -95,16 +92,10 @@ class UserAuth {
         return <String, dynamic>{
           "status": "Failed",
           "statusCode": response.statusCode,
-<<<<<<< HEAD
-          "error": responseData,
-          "message":
-              "User Information Exists! Code ${response.statusCode} ${response.body}",
-=======
           "data": responseData,
           "message": _parseValidationError(
             responseData['message'],
           ),
->>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
         };
       } else {
         return <String, dynamic>{
