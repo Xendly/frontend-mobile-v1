@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xendly_mobile/controller/core/user_auth.dart';
+import 'package:xendly_mobile/view/pages/verify_email.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
+import 'package:xendly_mobile/view/shared/routes.dart' as routes;
 
 class SignUpController extends GetxController {
   final _userAuth = Get.put(UserAuth());
@@ -14,6 +16,8 @@ class SignUpController extends GetxController {
   late TextEditingController phoneController;
   late TextEditingController dobController;
   late TextEditingController passwordController;
+
+  RxString controllerEmail = ''.obs;
 
   Map<String, dynamic> data = {
     "firstName": "",
@@ -35,6 +39,9 @@ class SignUpController extends GetxController {
     phoneController = TextEditingController();
     dobController = TextEditingController();
     passwordController = TextEditingController();
+    emailController.addListener(() {
+      controllerEmail.value = emailController.text;
+    });
   }
 
   @override
@@ -136,6 +143,12 @@ class SignUpController extends GetxController {
             backgroundColor: Colors.green,
             colorText: XMColors.light,
             duration: const Duration(seconds: 5),
+          );
+          return Get.to(
+            const VerifyEmail(),
+            arguments: {
+              "email": data["email"],
+            },
           );
         } else {
           printInfo(info: "${result["message"]}");

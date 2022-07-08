@@ -1,7 +1,15 @@
+import 'dart:convert';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:xendly_mobile/controller/core/constants.dart';
+import 'package:xendly_mobile/controller/core/user_auth.dart';
+import 'package:xendly_mobile/controller/verify_email_controller.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets.dart';
+import 'package:http/http.dart' as http;
 import 'package:xendly_mobile/view/shared/widgets/solid_button.dart';
 import 'package:xendly_mobile/view/shared/routes.dart' as routes;
 
@@ -13,7 +21,10 @@ class VerifyEmail extends StatefulWidget {
 
 class _VerifyEmailState extends State<VerifyEmail> {
   TextEditingController textEditingController = TextEditingController();
-  String currentText = "";
+  final _userAuth = Get.put(UserAuth());
+  // === FORM VALIDATION === //
+  var verifyEmailController = Get.put(VerifyEmailController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,40 +45,71 @@ class _VerifyEmailState extends State<VerifyEmail> {
               ),
               const SizedBox(height: 25),
               strongBody(
-                "We sent the verification code to your email inbox at johnsmith90@gmail.com",
+                "We sent the verification code to your email inbox at ${Get.arguments["email"]}",
                 XMColors.gray,
                 FontWeight.w500,
                 TextAlign.center,
               ),
               const SizedBox(height: 15),
-              PinCodeTextField(
-                length: 6,
-                onChanged: (value) {},
-                appContext: context,
-                textStyle: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: XMColors.primary,
+              Form(
+                key: verifyEmailController.formKey,
+                child: PinCodeTextField(
+                  length: 6,
+                  onChanged: (value) {},
+                  appContext: context,
+                  textStyle: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w600,
+                    color: XMColors.primary,
+                  ),
+                  cursorColor: XMColors.primary,
+                  cursorHeight: 17,
+                  onSaved: (value) {
+                    verifyEmailController.data["token"] = value;
+                    verifyEmailController.data["email"] =
+                        Get.arguments["email"];
+                  },
+                  validator: (value) {
+                    return verifyEmailController.validateTokenCode(value!);
+                  },
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.underline,
+                    fieldWidth: 52,
+                    activeColor: XMColors.primary,
+                    selectedColor: XMColors.primary,
+                    inactiveColor: XMColors.gray,
+                    activeFillColor: XMColors.primary,
+                    selectedFillColor: XMColors.none,
+                  ),
+                  enablePinAutofill: true,
+                  errorTextSpace: 16,
+                  controller: textEditingController,
+                  keyboardType: TextInputType.number,
                 ),
-                cursorColor: XMColors.primary,
-                cursorHeight: 17,
-                pinTheme: PinTheme(
-                  shape: PinCodeFieldShape.underline,
-                  fieldWidth: 52,
-                  activeColor: XMColors.primary,
-                  selectedColor: XMColors.primary,
-                  inactiveColor: XMColors.gray,
-                  activeFillColor: XMColors.primary,
-                  selectedFillColor: XMColors.none,
-                ),
-                controller: textEditingController,
-                keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 15),
-              richText(
-                "And in case you missed it, you can resend the verification code in ",
-                "05:36s",
-                TextAlign.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  body(
+                    "Didn't receive the code?",
+                    XMColors.gray,
+                    16,
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: () {
+                      print("code resent to mail");
+                    },
+                    child: body(
+                      "Resend",
+                      XMColors.primary,
+                      16,
+                      TextAlign.left,
+                      FontWeight.w600,
+                    ),
+                  )
+                ],
               ),
               const Spacer(),
               SolidButton(
@@ -75,7 +117,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                 textColor: XMColors.light,
                 buttonColor: XMColors.primary,
                 action: () {
-                  Navigator.pushNamed(context, routes.createPIN);
+                  verifyEmailController.checkTokenValidation();
                 },
               ),
             ],

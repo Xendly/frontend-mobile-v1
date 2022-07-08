@@ -244,6 +244,19 @@ Text bodyText(
   );
 }
 
+// === text style === //
+TextStyle bodyTextStyle(
+  Color? color,
+  double? fontSize,
+  FontWeight? fontWeight,
+) {
+  return TextStyle(
+    color: color,
+    fontSize: fontSize,
+    fontWeight: fontWeight,
+  );
+}
+
 /* === sections === */
 Widget sectionTitle() {
   return Row(

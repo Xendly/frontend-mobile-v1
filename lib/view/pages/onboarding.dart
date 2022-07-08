@@ -103,7 +103,7 @@ class _OnboardingState extends State<Onboarding> {
                     }
                   else
                     {
-                      Navigator.pushNamed(context, routes.signUp),
+                      Navigator.popAndPushNamed(context, routes.signUp),
                     }
                 },
                 buttonColor: XMColors.light,
@@ -122,7 +122,7 @@ class _OnboardingState extends State<Onboarding> {
                   {_pageController.jumpToPage(2)}
                 else
                   {
-                    Navigator.pushNamed(
+                    Navigator.popAndPushNamed(
                       context,
                       routes.signIn,
                     ),

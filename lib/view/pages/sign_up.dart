@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -39,6 +40,13 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
+  bool _isLoading = false;
+  void isLoading() {
+    setState(() {
+      _isLoading = true;
+    });
+  }
+
   StreamController<ErrorAnimationType>? errorController;
 
   bool hasError = false;
@@ -47,7 +55,6 @@ class _SignUpState extends State<SignUp> {
   void initState() {
     super.initState();
     futureCountry = _publicAuth.getCountry();
-    // countrySelected = "";
   }
 
   @override
@@ -149,7 +156,11 @@ class _SignUpState extends State<SignUp> {
                                     XMColors.primary,
                                     16,
                                   ),
+<<<<<<< HEAD
                                   value: "${country.shortCode}",
+=======
+                                  value: country,
+>>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
                                 );
                               }).toList(),
                               action: (String? value) {
@@ -166,72 +177,11 @@ class _SignUpState extends State<SignUp> {
                           } else if (snapshot.hasError) {
                             return Text("${snapshot.error}");
                           }
-                          return const Center(child: Text("Loading..."));
-                          // print("snapshot => ${snapshot.data![0]}");
-                          // if (snapshot.connectionState ==
-                          //     ConnectionState.waiting) {
-                          //   const Text("Loading...");
-                          // }
-                          // return Text("${snapshot.data![0]}");
-                          // else if (snapshot.connectionState ==
-                          //     ConnectionState.done) {
-                          //   return const Text("Load Done");
-                          // } else {
-                          //   return const Text("Random");
-                          // }
-                          // return const Text("Random 2");
-
-                          // if (snapshot.hasData) {
-                          //   return DropdownInput(
-                          //     label: "Country of Residence",
-                          //     hintText: "Venezuela",
-                          //     borderRadius: BorderRadius.circular(10),
-                          //     items: snapshot.data!.map((country) {
-                          //       return DropdownMenuItem<String>(
-                          //         child: body(
-                          //           "[${country.dialCode}] ${country.country}",
-                          //           XMColors.primary,
-                          //           16,
-                          //         ),
-                          //         value:
-                          //             "${country.country} ${country.dialCode} ${country.shortCode}",
-                          //       );
-                          //     }).toList(),
-                          //     action: (String? newValue) {
-                          //       setState(() {
-                          //         country = newValue!;
-                          //       });
-                          //     },
-                          //     onSaved: (value) =>
-                          //         signUpController.data["country"] = value,
-                          //     validator: (value) {
-                          //       return signUpController.validateCountry(value);
-                          //     },
-                          //   );
-                          // } else if (snapshot.hasError) {
-                          //   return Text("${snapshot.error}");
-                          // }
-                          // return const Text("Loading...");
-                          // return Center(child: CircularProgressIndicator());
+                          return const Center(
+                            child: CupertinoActivityIndicator(),
+                          );
                         },
                       ),
-
-                      // DropdownInput(
-                      //   label: "Country of Residence",
-                      //   hintText: "Venezuela",
-                      //   borderRadius: BorderRadius.circular(10),
-                      //   items: country,
-                      //   action: (String? newValue) {
-                      //     setState(() {
-                      //       country = newValue!;
-                      //     });
-                      //   },
-                      //   onSaved: (value) =>
-                      //       signUpController.data["country"] = value,
-                      //   validator: (value) {
-                      //     return signUpController.validateCountry(value);
-                      //   },
-                      // ),
                       const SizedBox(height: 25),
                       TextInput(
                         readOnly: false,
@@ -241,33 +191,34 @@ class _SignUpState extends State<SignUp> {
                             left: 17,
                             right: 0,
                           ),
-                          // child:
-                          //     // "$selectedCountryCode",
-                          //     FutureBuilder(
-                          //   future: futureCountry,
-                          //   builder: (context, snapshot) {
-                          //     if (snapshot.hasData) {
-                          //       return
                           child: body(
+<<<<<<< HEAD
                             // "${country.country}",
                             // "${snapshot.data[0].dialCode}",
                             "$countrySelected ",
+=======
+                            "+${countrySelected?.dialCode ?? ''}",
+>>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
                             XMColors.gray,
                             16,
                             TextAlign.center,
                             FontWeight.w500,
                           ),
-                          //       }
-                          //       return const Text("Loading...");
-                          //     },
-                          //   ),
                         ),
                         hintText: "9045637294",
                         inputType: TextInputType.phone,
                         borderRadius: BorderRadius.circular(10),
                         controller: signUpController.phoneController,
+<<<<<<< HEAD
                         onSaved: (value) =>
                             signUpController.data["phoneNo"] = value!,
+=======
+                        onSaved: (value) {
+                          printInfo(info: value ?? '');
+                          signUpController.data["phoneNo"] =
+                              '+${countrySelected!.dialCode! + value!}';
+                        },
+>>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
                         validator: (value) {
                           return signUpController.validatePhone(value!);
                         },

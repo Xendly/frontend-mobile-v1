@@ -6,6 +6,7 @@ class SolidButton extends StatelessWidget {
   late Function()? action;
   late String? text;
   late Color? buttonColor, textColor;
+
   SolidButton({
     Key? key,
     this.action,
