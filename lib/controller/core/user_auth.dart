@@ -60,6 +60,54 @@ class UserAuth {
     }
   }
 
+  // === VERIFY EMAIL === //
+  Future<Map<String, dynamic>> resendOTP(String email) async {
+    try {
+      final url = '$baseUrl/api/auth/verify/resend';
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headersValues,
+        body: jsonEncode(
+          <String, dynamic>{
+            'email': email,
+          },
+        ),
+      );
+
+      final responseData = json.decode(response.body);
+      if ([200, 201].contains(response.statusCode)) {
+        return {
+          "status": "Success",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+        };
+      } else if (response.statusCode == 422) {
+        return <String, dynamic>{
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "data": responseData,
+          "message": _parseValidationError(
+            responseData['message'],
+          ),
+        };
+      } else {
+        // throw Exception(_parseValidationError(responseData));
+        return {
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+          // "message": _parseValidationError(responseData),
+        };
+      }
+    } catch (error) {
+      return {
+        "status": "Failed",
+        'error': error.toString(),
+        "message": "Unknown Error Occurred - $error",
+      };
+    }
+  }
+
   // === REGISTER A USER === //
   Future<Map<String, dynamic>> registerUser(Map<String, dynamic> data) async {
     try {

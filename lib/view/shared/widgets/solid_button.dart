@@ -3,30 +3,25 @@ import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets.dart';
 
 class SolidButton extends StatelessWidget {
-  late Function()? action;
-  late String? text;
-  late Color? buttonColor, textColor;
+  final Function()? action;
+  final String? text;
+  final Color? buttonColor, textColor;
+  final bool isLoading;
 
-  SolidButton({
+  const SolidButton({
     Key? key,
     this.action,
     this.text,
     this.buttonColor,
     this.textColor,
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: action,
-      child: Container(
-        margin: const EdgeInsets.only(left: 11, top: 3),
-        child: strongBody(
-          text,
-          textColor,
-          FontWeight.w600,
-        ),
-      ),
+      child: _getChild(),
       style: ElevatedButton.styleFrom(
         primary: buttonColor,
         elevation: 0,
@@ -40,6 +35,24 @@ class SolidButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _getChild() {
+    if (isLoading) {
+      return const SizedBox(
+        height: 26.0,
+        width: 26.0,
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(Colors.white),
+          strokeWidth: 2.0,
+        ),
+      );
+    }
+    return strongBody(
+      text,
+      textColor,
+      FontWeight.w600,
     );
   }
 }

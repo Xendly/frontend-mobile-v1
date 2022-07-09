@@ -99,7 +99,10 @@ class _VerifyEmailState extends State<VerifyEmail> {
                   const SizedBox(width: 8),
                   InkWell(
                     onTap: () {
-                      print("code resent to mail");
+                      if (Get.arguments?['email'] != null) {
+                        verifyEmailController.resendOtp(Get.arguments['email']);
+                        print(Get.arguments);
+                      }
                     },
                     child: body(
                       "Resend",

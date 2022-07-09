@@ -276,14 +276,15 @@ class _SignUpState extends State<SignUp> {
                       const SizedBox(height: 22),
                       const CustomCheckbox(),
                       const SizedBox(height: 50),
-                      SolidButton(
-                        text: "Create Account",
-                        textColor: XMColors.light,
-                        buttonColor: XMColors.primary,
-                        action: () {
-                          signUpController.checkSignUpValidation();
-                        },
-                      ),
+                      Obx(() => SolidButton(
+                            text: "Create Account",
+                            textColor: XMColors.light,
+                            buttonColor: XMColors.primary,
+                            isLoading: signUpController.isLoading.value,
+                            action: () {
+                              signUpController.checkSignUpValidation();
+                            },
+                          )),
                       const SizedBox(height: 25),
                       Align(
                         alignment: Alignment.center,

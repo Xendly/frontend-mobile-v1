@@ -18,6 +18,7 @@ class SignUpController extends GetxController {
   late TextEditingController passwordController;
 
   RxString controllerEmail = ''.obs;
+  final isLoading = false.obs;
 
   Map<String, dynamic> data = {
     "firstName": "",
@@ -133,8 +134,10 @@ class SignUpController extends GetxController {
       printInfo(info: "Some fields are not valid");
     } else {
       formKey.currentState!.save();
+      isLoading.toggle();
       try {
         final result = await _userAuth.registerUser(data);
+        isLoading.toggle();
         if (result['statusCode'] == 200 || result["statusCode"] == 201) {
           printInfo(info: "${result["message"]}");
           Get.snackbar(
@@ -169,6 +172,7 @@ class SignUpController extends GetxController {
           }
         }
       } catch (error) {
+        isLoading.toggle();
         Get.snackbar("Error", "Unknown Error Occured, Try Again!");
         return printInfo(
           info: "Unknown Error Occured, Try Again!",

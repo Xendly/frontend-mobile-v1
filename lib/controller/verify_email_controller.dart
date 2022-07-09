@@ -10,6 +10,8 @@ class VerifyEmailController extends GetxController {
 
   late TextEditingController tokenController;
 
+  final isLoading = false.obs;
+
   Map<String, dynamic> data = {
     "token": "",
     "email": "",
@@ -80,56 +82,92 @@ class VerifyEmailController extends GetxController {
         );
       }
     }
-
-    // if (isValid) {
-    //   print("valid");
-    //   // formKey.currentState.save();
-    //   // await _userAuth.verifyEmail(data);
-    //   // Get.offNamed(routes.SIGN_UP_SUCCESS);
-    // } else {
-    //   print("not valid");
-    // }
-    // if (!isValid) {
-    //   printInfo(info: "Some fields are not valid");
-    // } else {
-    //   // formKey.currentState!.save();
-    //   printInfo(info: "Verification fields are valid");
-    //   // try {
-    //   //   final result = await _userAuth.registerUser(data);
-    //   //   if (result['statusCode'] == 200 || result["statusCode"] == 201) {
-    //   //     printInfo(info: "${result["message"]}");
-    //   //     Get.snackbar(
-    //   //       result["status"],
-    //   //       result["message"],
-    //   //       backgroundColor: Colors.green,
-    //   //       colorText: XMColors.light,
-    //   //       duration: const Duration(seconds: 5),
-    //   //     );
-    //   //     return Get.toNamed(routes.verifyEmail);
-    //   //   } else {
-    //   //     printInfo(info: "${result["message"]}");
-    //   //     if (result["message"] != null || result["status"] != "failed") {
-    //   //       Get.snackbar(
-    //   //         result["status"],
-    //   //         result["message"],
-    //   //       );
-    //   //     } else {
-    //   //       Get.closeAllSnackbars();
-    //   //       Get.snackbar(
-    //   //         result["status"].toString(),
-    //   //         result["message"],
-    //   //         backgroundColor: XMColors.danger,
-    //   //         colorText: XMColors.light,
-    //   //         duration: const Duration(seconds: 5),
-    //   //       );
-    //   //     }
-    //   //   }
-    //   // } catch (error) {
-    //   //   Get.snackbar("Error", "Unknown Error Occured, Try Again!");
-    //   //   return printInfo(
-    //   //     info: "Unknown Error Occured, Try Again!",
-    //   //   );
-    //   // }
-    // }
   }
+
+  void resendOtp(dynamic email) async {
+    if (isLoading.value) return;
+    Get.dialog(
+      const AlertDialog(
+        title: Center(
+            child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(XMColors.primary),
+        )),
+      ),
+      barrierDismissible: false,
+    );
+    // await Future.delayed(Duration(seconds: 4));
+    printInfo(
+        info:
+            "code verified - token => ${data['token']}, ${data['email']}, $email");
+    try {
+      final result = await _userAuth.resendOTP(email);
+      Get.back();
+      if (result['statusCode'] == 200) {
+        printInfo(
+          info:
+              ">>> Your code is either invalid or expired <<< >>> ${result['message']} <<<",
+        );
+        Get.snackbar("Success", "O.T.P. has been resent");
+      } else {
+        Get.snackbar("Error occured", result['message']);
+      }
+    } catch (error) {
+      Get.back();
+      Get.snackbar("Error", "Unknown Error Occured, Try Again!");
+      return printInfo(
+        info: "Unknown Error Occured, Try Again! - $error",
+      );
+    }
+  }
+
+  // if (isValid) {
+  //   print("valid");
+  //   // formKey.currentState.save();
+  //   // await _userAuth.verifyEmail(data);
+  //   // Get.offNamed(routes.SIGN_UP_SUCCESS);
+  // } else {
+  //   print("not valid");
+  // }
+  // if (!isValid) {
+  //   printInfo(info: "Some fields are not valid");
+  // } else {
+  //   // formKey.currentState!.save();
+  //   printInfo(info: "Verification fields are valid");
+  //   // try {
+  //   //   final result = await _userAuth.registerUser(data);
+  //   //   if (result['statusCode'] == 200 || result["statusCode"] == 201) {
+  //   //     printInfo(info: "${result["message"]}");
+  //   //     Get.snackbar(
+  //   //       result["status"],
+  //   //       result["message"],
+  //   //       backgroundColor: Colors.green,
+  //   //       colorText: XMColors.light,
+  //   //       duration: const Duration(seconds: 5),
+  //   //     );
+  //   //     return Get.toNamed(routes.verifyEmail);
+  //   //   } else {
+  //   //     printInfo(info: "${result["message"]}");
+  //   //     if (result["message"] != null || result["status"] != "failed") {
+  //   //       Get.snackbar(
+  //   //         result["status"],
+  //   //         result["message"],
+  //   //       );
+  //   //     } else {
+  //   //       Get.closeAllSnackbars();
+  //   //       Get.snackbar(
+  //   //         result["status"].toString(),
+  //   //         result["message"],
+  //   //         backgroundColor: XMColors.danger,
+  //   //         colorText: XMColors.light,
+  //   //         duration: const Duration(seconds: 5),
+  //   //       );
+  //   //     }
+  //   //   }
+  //   // } catch (error) {
+  //   //   Get.snackbar("Error", "Unknown Error Occured, Try Again!");
+  //   //   return printInfo(
+  //   //     info: "Unknown Error Occured, Try Again!",
+  //   //   );
+  //   // }
+  // }
 }
