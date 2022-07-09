@@ -3,17 +3,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets.dart';
 
+// I added a T type, which can take any value at compile time, String, int, or even classes. That makes it more dynamic.
+// check how I used it inside sign_up.dart
 // ignore: must_be_immutable
-class DropdownInput extends StatelessWidget {
+class DropdownInput<T> extends StatelessWidget {
   String label;
-  String? selectedValue;
+  T? selectedValue;
   String hintText;
-  List<DropdownMenuItem<String>>? items;
-  Function(String?)? action;
+  List<DropdownMenuItem<T>>? items;
+  Function(T?)? action;
   late Widget? suffixIcon, prefixIcon;
   late BorderRadius borderRadius;
-  late Function(String?)? onSaved;
-  late String? Function(String?)? validator;
+  late Function(T?)? onSaved;
+  late String? Function(T?)? validator;
   DropdownInput({
     Key? key,
     required this.label,

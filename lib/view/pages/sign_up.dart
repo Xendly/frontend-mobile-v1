@@ -28,7 +28,7 @@ class _SignUpState extends State<SignUp> {
   var signUpController = Get.put(SignUpController());
   late Future<List<CountryModel>> futureCountry;
   final _publicAuth = PublicAuth();
-  String countrySelected = "";
+  CountryModel? countrySelected;
 
   // === unsorted === //
   bool? value = false;
@@ -141,35 +141,31 @@ class _SignUpState extends State<SignUp> {
                         },
                       ),
                       const SizedBox(height: 25),
-                      FutureBuilder<List>(
+                      FutureBuilder<List<CountryModel>>(
                         future: futureCountry,
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            return DropdownInput(
+                            return DropdownInput<CountryModel>(
                               label: "Country of Residence",
                               hintText: "Venezuela",
                               borderRadius: BorderRadius.circular(10),
                               items: snapshot.data?.map((country) {
-                                return DropdownMenuItem<String>(
+                                return DropdownMenuItem<CountryModel>(
                                   child: body(
                                     "(${country.dialCode}) ${country.country}",
                                     XMColors.primary,
                                     16,
                                   ),
-<<<<<<< HEAD
-                                  value: "${country.shortCode}",
-=======
                                   value: country,
->>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
                                 );
                               }).toList(),
-                              action: (String? value) {
+                              action: (CountryModel? value) {
                                 setState(() {
                                   countrySelected = value!;
                                 });
                               },
-                              onSaved: (value) =>
-                                  signUpController.data["country"] = value,
+                              onSaved: (value) => signUpController
+                                  .data["country"] = value?.country ?? "",
                               validator: (value) {
                                 return signUpController.validateCountry(value);
                               },
@@ -192,13 +188,7 @@ class _SignUpState extends State<SignUp> {
                             right: 0,
                           ),
                           child: body(
-<<<<<<< HEAD
-                            // "${country.country}",
-                            // "${snapshot.data[0].dialCode}",
-                            "$countrySelected ",
-=======
                             "+${countrySelected?.dialCode ?? ''}",
->>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
                             XMColors.gray,
                             16,
                             TextAlign.center,
@@ -209,16 +199,11 @@ class _SignUpState extends State<SignUp> {
                         inputType: TextInputType.phone,
                         borderRadius: BorderRadius.circular(10),
                         controller: signUpController.phoneController,
-<<<<<<< HEAD
-                        onSaved: (value) =>
-                            signUpController.data["phoneNo"] = value!,
-=======
                         onSaved: (value) {
                           printInfo(info: value ?? '');
                           signUpController.data["phoneNo"] =
                               '+${countrySelected!.dialCode! + value!}';
                         },
->>>>>>> 905e601 (Registration; 6 Digits Code Validation;)
                         validator: (value) {
                           return signUpController.validatePhone(value!);
                         },

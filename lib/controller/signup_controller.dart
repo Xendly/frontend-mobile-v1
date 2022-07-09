@@ -86,7 +86,7 @@ class SignUpController extends GetxController {
     }
   }
 
-  String? validateCountry(String? value) {
+  String? validateCountry(dynamic value) {
     if (GetUtils.isNullOrBlank(value)!) {
       return "Select your Country of Residence";
     } else {
