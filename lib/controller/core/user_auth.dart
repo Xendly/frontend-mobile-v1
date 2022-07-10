@@ -274,6 +274,15 @@ class UserAuth {
           "statusCode": response.statusCode,
           "message": responseData["message"],
         };
+      } else if (response.statusCode == 422) {
+        return <String, dynamic>{
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "data": responseData,
+          "message": _parseValidationError(
+            responseData['message'],
+          ),
+        };
       } else {
         // throw Exception(_parseValidationError(responseData));
         return {
