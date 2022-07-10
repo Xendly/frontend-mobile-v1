@@ -15,6 +15,7 @@ class SignUpController extends GetxController {
   late TextEditingController countryController;
   late TextEditingController phoneController;
   late TextEditingController dobController;
+  late TextEditingController pinController;
   late TextEditingController passwordController;
 
   RxString controllerEmail = ''.obs;
@@ -27,6 +28,7 @@ class SignUpController extends GetxController {
     "country": "",
     "phoneNo": "",
     "dob": "",
+    "pin": "",
     "password": "",
   };
 
@@ -39,22 +41,23 @@ class SignUpController extends GetxController {
     countryController = TextEditingController();
     phoneController = TextEditingController();
     dobController = TextEditingController();
+    pinController = TextEditingController();
     passwordController = TextEditingController();
     emailController.addListener(() {
       controllerEmail.value = emailController.text;
     });
   }
 
-  @override
-  void onClose() {
-    firstNameController.dispose();
-    lastNameController.dispose();
-    emailController.dispose();
-    countryController.dispose();
-    phoneController.dispose();
-    dobController.dispose();
-    passwordController.dispose();
-  }
+  // @override
+  // void onClose() {
+  //   firstNameController.dispose();
+  //   lastNameController.dispose();
+  //   emailController.dispose();
+  //   countryController.dispose();
+  //   phoneController.dispose();
+  //   dobController.dispose();
+  //   passwordController.dispose();
+  // }
 
   // === fields validation === //
   String? validateFirstName(String value) {
@@ -108,6 +111,20 @@ class SignUpController extends GetxController {
   String? validateDob(String value) {
     if (GetUtils.isNullOrBlank(value)!) {
       return "Enter your Date of Birth";
+    } else {
+      return null;
+    }
+  }
+
+  String? validatePIN(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Transaction PIN";
+    } else if (GetUtils.isLengthLessThan(value, 3)) {
+      return "PIN must contain 4 characters";
+    } else if (GetUtils.isLengthGreaterThan(value, 4)) {
+      return "PIN must contain 4 characters";
+    } else if (!GetUtils.isNumericOnly(value)) {
+      return "PIN must contain only digits";
     } else {
       return null;
     }

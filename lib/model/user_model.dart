@@ -6,6 +6,7 @@ class User {
   final String? country;
   final String? phoneNo;
   final String? dob;
+  final String? pin;
   final String? password;
 
   User({
@@ -16,6 +17,7 @@ class User {
     this.country,
     this.phoneNo,
     this.dob,
+    this.pin,
     this.password,
   });
 
@@ -34,6 +36,7 @@ class User {
         country = userData['country'],
         phoneNo = userData['phoneNo'],
         dob = userData['dob'],
+        pin = userData['pin'],
         password = userData['password'];
 
   User.empty()
@@ -44,5 +47,6 @@ class User {
         country = null,
         phoneNo = null,
         dob = null,
+        pin = null,
         password = null;
 }

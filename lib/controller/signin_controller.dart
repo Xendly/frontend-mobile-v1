@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:xendly_mobile/controller/core/user_auth.dart';
+import 'package:xendly_mobile/view/pages/home.dart';
+import 'package:xendly_mobile/view/shared/colors.dart';
 
 class SignInController extends GetxController {
+  final _userAuth = Get.put(UserAuth());
   GlobalKey<FormState> signInFormKey =
       GlobalKey<FormState>(debugLabel: "_signInKey");
 
   late TextEditingController emailController;
   late TextEditingController passwordController;
 
-  Map<String, dynamic> signInData = {
+  RxString controllerEmail = ''.obs;
+  final isLoading = false.obs;
+
+  Map<String, dynamic> data = {
     "email": "",
     "password": "",
   };
@@ -38,23 +45,75 @@ class SignInController extends GetxController {
   }
 
   String? validatePassword(String value) {
+    String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
+    RegExp regExp = RegExp(pattern);
     if (GetUtils.isNullOrBlank(value)!) {
       return "Enter your Security Password";
-    } else if (GetUtils.isLengthLessOrEqual(value, 5)) {
-      return "Password must contain 5 characters";
+    } else if (GetUtils.isLengthLessOrEqual(value, 7)) {
+      return "Password must contain 8 characters";
+    } else if (!regExp.hasMatch(value)) {
+      return "Password must include:\n- 1 uppercase\n- 1 lowercase\n- 1 number";
     } else {
       return null;
     }
   }
 
   // === check the entire sign in === //
-  void checkSignInValidation() {
+  void checkSignInValidation() async {
     final isValid = signInFormKey.currentState!.validate();
     if (!isValid) {
-      print("some fields are invalid");
+      printInfo(info: "some fields are invalid");
     } else {
-      print("all fields are valid");
       signInFormKey.currentState!.save();
+      isLoading.toggle();
+      try {
+        final result = await _userAuth.loginUser(data);
+        isLoading.toggle();
+        if (result["statusCode"] == 200) {
+          printInfo(info: "${result["message"]}");
+          Get.snackbar(
+            result["status"],
+            result["message"],
+            backgroundColor: Colors.green,
+            colorText: XMColors.light,
+            duration: const Duration(seconds: 5),
+          );
+          return Get.to(
+            const Home(),
+            arguments: {
+              "email": data["email"],
+            },
+          );
+        } else {
+          printInfo(info: "${result["message"]}");
+          if (result["message"] != null || result["status"] != "failed") {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          } else {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+            Get.snackbar(
+              result["status"],
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          }
+        }
+      } catch (error) {}
     }
   }
 }

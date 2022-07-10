@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:xendly_mobile/controller/core/user_auth.dart';
 import 'package:xendly_mobile/controller/forgotpwd_controller.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets.dart';
@@ -13,10 +14,7 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  // === form validation === //
-  var forgotPwdController = Get.put(
-    ForgotPwdController(),
-  );
+  var forgotPwdController = Get.put(ForgotPwdController());
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +50,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 const SizedBox(height: 26),
                 Form(
-                  key: forgotPwdController.forgotPwdFormKey,
+                  key: forgotPwdController.formKey,
                   child: Column(
                     children: [
                       TextInput(
@@ -63,7 +61,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         borderRadius: BorderRadius.circular(10),
                         controller: forgotPwdController.emailController,
                         onSaved: (value) =>
-                            forgotPwdController.forgotPwdData["email"] = value!,
+                            forgotPwdController.data["email"] = value!,
                         validator: (value) {
                           return forgotPwdController.validateEmail(value!);
                         },

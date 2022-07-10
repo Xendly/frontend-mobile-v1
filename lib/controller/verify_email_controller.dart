@@ -2,31 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xendly_mobile/controller/core/user_auth.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
+import 'package:xendly_mobile/view/shared/routes.dart' as routes;
 
 class VerifyEmailController extends GetxController {
   final _userAuth = Get.put(UserAuth());
-  GlobalKey<FormState> formKey =
-      GlobalKey<FormState>(debugLabel: "_verifyEmailKey");
-
-  late TextEditingController tokenController;
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  var tokenController = TextEditingController();
 
   final isLoading = false.obs;
 
   Map<String, dynamic> data = {
     "token": "",
-    "email": "",
   };
 
   @override
   void onInit() {
     super.onInit();
-    tokenController = TextEditingController();
+    tokenController;
   }
 
-  @override
-  void onClose() {
-    tokenController.dispose();
-  }
+  // @override
+  // void onClose() {
+  //   tokenController.dispose();
+  //   // super.dispose();
+  // }
 
   // === fields validation === //
   String? validateTokenCode(String value) {
@@ -46,14 +45,14 @@ class VerifyEmailController extends GetxController {
       printInfo(info: "code not verified");
     } else {
       formKey.currentState!.save();
-      printInfo(
-          info: "code verified - token => ${data['token']}, ${data['email']}");
+      isLoading.toggle();
+      printInfo(info: "code verified - token => ${data['token']}}");
       try {
         final result = await _userAuth.verifyEmail(data);
+        isLoading.toggle();
         if (result['statusCode'] == 200 || result["statusCode"] == 201) {
           printInfo(
-            info:
-                ">>> Your code is either invalid or expired <<< >>> ${result['message']} <<<",
+            info: ">>> ${result['message']} <<<",
           );
           Get.snackbar(
             result["status"],
@@ -62,10 +61,12 @@ class VerifyEmailController extends GetxController {
             colorText: XMColors.light,
             duration: const Duration(seconds: 5),
           );
+          return Get.toNamed(
+            routes.createPIN,
+          );
         } else {
           printInfo(
-            info:
-                ">>> Your code is either invalid or expired <<< >>> ${result['message']} <<<",
+            info: ">>> ${result['message']} <<<",
           );
           Get.snackbar(
             result["status"],
@@ -95,10 +96,7 @@ class VerifyEmailController extends GetxController {
       ),
       barrierDismissible: false,
     );
-    // await Future.delayed(Duration(seconds: 4));
-    printInfo(
-        info:
-            "code verified - token => ${data['token']}, ${data['email']}, $email");
+    printInfo(info: "code verified - token => ${data['token']}}, $email");
     try {
       final result = await _userAuth.resendOTP(email);
       Get.back();
@@ -119,55 +117,4 @@ class VerifyEmailController extends GetxController {
       );
     }
   }
-
-  // if (isValid) {
-  //   print("valid");
-  //   // formKey.currentState.save();
-  //   // await _userAuth.verifyEmail(data);
-  //   // Get.offNamed(routes.SIGN_UP_SUCCESS);
-  // } else {
-  //   print("not valid");
-  // }
-  // if (!isValid) {
-  //   printInfo(info: "Some fields are not valid");
-  // } else {
-  //   // formKey.currentState!.save();
-  //   printInfo(info: "Verification fields are valid");
-  //   // try {
-  //   //   final result = await _userAuth.registerUser(data);
-  //   //   if (result['statusCode'] == 200 || result["statusCode"] == 201) {
-  //   //     printInfo(info: "${result["message"]}");
-  //   //     Get.snackbar(
-  //   //       result["status"],
-  //   //       result["message"],
-  //   //       backgroundColor: Colors.green,
-  //   //       colorText: XMColors.light,
-  //   //       duration: const Duration(seconds: 5),
-  //   //     );
-  //   //     return Get.toNamed(routes.verifyEmail);
-  //   //   } else {
-  //   //     printInfo(info: "${result["message"]}");
-  //   //     if (result["message"] != null || result["status"] != "failed") {
-  //   //       Get.snackbar(
-  //   //         result["status"],
-  //   //         result["message"],
-  //   //       );
-  //   //     } else {
-  //   //       Get.closeAllSnackbars();
-  //   //       Get.snackbar(
-  //   //         result["status"].toString(),
-  //   //         result["message"],
-  //   //         backgroundColor: XMColors.danger,
-  //   //         colorText: XMColors.light,
-  //   //         duration: const Duration(seconds: 5),
-  //   //       );
-  //   //     }
-  //   //   }
-  //   // } catch (error) {
-  //   //   Get.snackbar("Error", "Unknown Error Occured, Try Again!");
-  //   //   return printInfo(
-  //   //     info: "Unknown Error Occured, Try Again!",
-  //   //   );
-  //   // }
-  // }
 }

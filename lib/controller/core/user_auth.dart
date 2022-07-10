@@ -123,6 +123,7 @@ class UserAuth {
             "country": data['country'],
             "phone": data['phoneNo'],
             "dob": data['dob'],
+            "pin": data['pin'],
             "password": data['password'],
           },
         ),
@@ -158,6 +159,135 @@ class UserAuth {
         "status": "Failed",
         'data': error.toString(),
         "message": "An Unknown Error Occurred - $error",
+      };
+    }
+  }
+
+  // === USER LOGIN === //
+  Future<Map<String, dynamic>> loginUser(Map<String, dynamic> data) async {
+    try {
+      final url = '$baseUrl/api/auth/login';
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headersValues,
+        body: jsonEncode(
+          <String, dynamic>{
+            "email": data["email"],
+            'password': data['password'],
+          },
+        ),
+      );
+
+      final responseData = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {
+          "status": "Success",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+        };
+      } else {
+        // throw Exception(_parseValidationError(responseData));
+        return {
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+          // "message": _parseValidationError(responseData),
+        };
+      }
+    } catch (error) {
+      return {
+        "status": "Failed",
+        'error': error.toString(),
+        "message": "Unknown Error Occurred - $error",
+      };
+    }
+  }
+
+  // === CREATE TRANSACTION PIN === //
+  Future<Map<String, dynamic>> createTransactionPin(
+      Map<String, dynamic> data) async {
+    try {
+      final url = '$baseUrl/api/users/pin/create';
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headersValues,
+        body: jsonEncode(
+          <String, dynamic>{
+            "pin": data["pin"],
+          },
+        ),
+      );
+
+      final responseData = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {
+          "status": "Success",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+        };
+      } else if (response.statusCode == 422) {
+        return <String, dynamic>{
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "data": responseData,
+          "message": _parseValidationError(
+            responseData['message'],
+          ),
+        };
+      } else {
+        // throw Exception(_parseValidationError(responseData));
+        return {
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "data": responseData,
+          "message": responseData["message"],
+          // "message": _parseValidationError(responseData),
+        };
+      }
+    } catch (error) {
+      return {
+        "status": "Failed",
+        'error': error.toString(),
+        "message": "Unknown Error Occurred - $error",
+      };
+    }
+  }
+
+  // === FORGOT PASSWORD === //
+  Future<Map<String, dynamic>> forgotPassword(Map<String, dynamic> data) async {
+    try {
+      final url = '$baseUrl/api/auth/password/forgot';
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headersValues,
+        body: jsonEncode(
+          <String, dynamic>{
+            "email": data["email"],
+          },
+        ),
+      );
+
+      final responseData = json.decode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {
+          "status": "Success",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+        };
+      } else {
+        // throw Exception(_parseValidationError(responseData));
+        return {
+          "status": "Failed",
+          "statusCode": response.statusCode,
+          "message": responseData["message"],
+          // "message": _parseValidationError(responseData),
+        };
+      }
+    } catch (error) {
+      return {
+        "status": "Failed",
+        'error': error,
+        "message": "Unknown Error Occurred - $error",
       };
     }
   }

@@ -74,7 +74,7 @@ class _SignInState extends State<SignIn> {
                         borderRadius: BorderRadius.circular(10),
                         controller: signInController.emailController,
                         onSaved: (value) =>
-                            signInController.signInData["email"] = value!,
+                            signInController.data["email"] = value!,
                         validator: (value) {
                           return signInController.validateEmail(value!);
                         },
@@ -85,7 +85,7 @@ class _SignInState extends State<SignIn> {
                         hintText: "*******",
                         controller: signInController.passwordController,
                         onSaved: (value) =>
-                            signInController.signInData["password"] = value!,
+                            signInController.data["password"] = value!,
                         validator: (value) {
                           return signInController.validatePassword(value!);
                         },

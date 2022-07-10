@@ -1,17 +1,11 @@
-import 'dart:convert';
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:xendly_mobile/controller/core/constants.dart';
-import 'package:xendly_mobile/controller/core/user_auth.dart';
-import 'package:xendly_mobile/controller/verify_email_controller.dart';
-import 'package:xendly_mobile/view/shared/colors.dart';
-import 'package:xendly_mobile/view/shared/widgets.dart';
-import 'package:http/http.dart' as http;
-import 'package:xendly_mobile/view/shared/widgets/solid_button.dart';
-import 'package:xendly_mobile/view/shared/routes.dart' as routes;
+import '../../controller/core/user_auth.dart';
+import '../../controller/verify_email_controller.dart';
+import '../shared/colors.dart';
+import '../shared/widgets.dart';
+import '../shared/widgets/solid_button.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({Key? key}) : super(key: key);
@@ -20,9 +14,6 @@ class VerifyEmail extends StatefulWidget {
 }
 
 class _VerifyEmailState extends State<VerifyEmail> {
-  TextEditingController textEditingController = TextEditingController();
-  final _userAuth = Get.put(UserAuth());
-  // === FORM VALIDATION === //
   var verifyEmailController = Get.put(VerifyEmailController());
 
   @override
@@ -45,7 +36,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
               ),
               const SizedBox(height: 25),
               strongBody(
-                "We sent the verification code to your email inbox at ${Get.arguments["email"]}",
+                "We sent the verification code to your email inbox",
                 XMColors.gray,
                 FontWeight.w500,
                 TextAlign.center,
@@ -64,6 +55,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                   ),
                   cursorColor: XMColors.primary,
                   cursorHeight: 17,
+                  controller: verifyEmailController.tokenController,
                   onSaved: (value) {
                     verifyEmailController.data["token"] = value;
                     verifyEmailController.data["email"] =
@@ -83,7 +75,6 @@ class _VerifyEmailState extends State<VerifyEmail> {
                   ),
                   enablePinAutofill: true,
                   errorTextSpace: 16,
-                  controller: textEditingController,
                   keyboardType: TextInputType.number,
                 ),
               ),

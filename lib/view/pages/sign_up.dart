@@ -25,7 +25,6 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   // === FORM VALIDATION === //
-  var signUpController = Get.put(SignUpController());
   late Future<List<CountryModel>> futureCountry;
   final _publicAuth = PublicAuth();
   CountryModel? countrySelected;
@@ -64,6 +63,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    var signUpController = Get.put(SignUpController());
     return Scaffold(
       backgroundColor: XMColors.light,
       extendBody: true,
@@ -243,6 +243,35 @@ class _SignUpState extends State<SignUp> {
                         validator: (value) {
                           return signUpController.validateDob(value!);
                         },
+                      ),
+                      const SizedBox(height: 25),
+                      PasswordInput(
+                        label: "Transaction PIN",
+                        hintText: "*******",
+                        controller: signUpController.pinController,
+                        onSaved: (value) =>
+                            signUpController.data["pin"] = value!,
+                        validator: (value) {
+                          return signUpController.validatePIN(value!);
+                        },
+                        suffixIcon: Padding(
+                          padding: const EdgeInsets.only(right: 17),
+                          child: GestureDetector(
+                            onTap: togglePassword,
+                            child: _obscureText
+                                ? SvgPicture.asset(
+                                    "assets/icons/eye.svg",
+                                    width: 22,
+                                    height: 22,
+                                  )
+                                : SvgPicture.asset(
+                                    "assets/icons/eye-slash.svg",
+                                    width: 22,
+                                    height: 22,
+                                  ),
+                          ),
+                        ),
+                        obscureText: _obscureText ? true : false,
                       ),
                       const SizedBox(height: 25),
                       PasswordInput(
