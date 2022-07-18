@@ -40,6 +40,9 @@ dependencies:
   intl: ^0.17.0
   http: ^0.13.4
   get_storage: ^2.0.3
+  modal_bottom_sheet: ^2.0.1
+  draggable_bottom_sheet: ^0.1.2
+  flutterwave_standard: ^1.0.4
 
 dev_dependencies:
   flutter_test:
@@ -64,8 +67,11 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/
+    - assets/
+    - assets/fonts/
     - assets/icons/
+    - assets/icons/bold/
+    - assets/images/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
@@ -83,3 +89,15 @@ flutter:
       fonts:
         - asset: assets/fonts/TTFirsNeue-Regular.ttf
           weight: 400
+    - family: Gilroy
+      fonts:
+        - asset: assets/fonts/Gilroy-Light.ttf
+        - asset: assets/fonts/Gilroy-Bold.ttf
+        - asset: assets/fonts/Gilroy-Thin.ttf
+        - asset: assets/fonts/Gilroy-UltraLight.ttf
+        - asset: assets/fonts/Gilroy-Regular.ttf
+        - asset: assets/fonts/Gilroy-SemiBold.ttf
+        - asset: assets/fonts/Gilroy-ExtraBold.ttf
+        - asset: assets/fonts/Gilroy-Black.ttf
+        - asset: assets/fonts/Gilroy-Medium.ttf
+        - asset: assets/fonts/Gilroy-Heavy.ttf

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:xendly_mobile/controller/core/token_storage.dart';
+import 'package:xendly_mobile/controller/core/user_auth.dart';
 import 'package:xendly_mobile/controller/signin_controller.dart';
+import 'package:xendly_mobile/view/pages/check_pin.dart';
+import 'package:xendly_mobile/view/pages/create_pin.dart';
+import 'package:xendly_mobile/view/pages/home.dart';
 import 'package:xendly_mobile/view/pages/sign_up.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets.dart';
@@ -18,15 +24,136 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  // === form validation === //
-  var signInController = Get.put(SignInController());
-
-  // === hide password === //
+  // === UNSORTED === //
   bool _obscureText = true;
   void togglePassword() {
     setState(() {
       _obscureText = !_obscureText;
     });
+  }
+
+// === CONTROLLER === //
+  final _userAuth = Get.put(UserAuth());
+  GlobalKey<FormState> formKey = GlobalKey<FormState>(debugLabel: "_signInKey");
+
+  TextEditingController? emailController = TextEditingController();
+  TextEditingController? passwordController = TextEditingController();
+
+  RxString controllerEmail = ''.obs;
+  final isLoading = false.obs;
+
+  Map<String, dynamic> data = {
+    "email": "",
+    "password": "",
+  };
+
+  void onInit() {
+    super.initState();
+    emailController;
+    passwordController;
+  }
+
+  String? validateEmail(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Email Address";
+    } else if (!GetUtils.isEmail(value)) {
+      return "Provide a valid Email Address";
+    } else {
+      return null;
+    }
+  }
+
+  String? validatePassword(String value) {
+    String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
+    RegExp regExp = RegExp(pattern);
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Security Password";
+    } else if (GetUtils.isLengthLessOrEqual(value, 7)) {
+      return "Password must contain 8 characters";
+    } else if (!regExp.hasMatch(value)) {
+      return "Password must include:\n- 1 uppercase\n- 1 lowercase\n- 1 number";
+    } else {
+      return null;
+    }
+  }
+
+  void checkSignInValidation() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      printInfo(info: "some fields are invalid");
+    } else {
+      formKey.currentState!.save();
+      isLoading.toggle();
+      try {
+        final result = await _userAuth.loginUser(data);
+        isLoading.toggle();
+        if (result["statusCode"] == 200) {
+          printInfo(info: "Status => ${result['status']}");
+          printInfo(info: "Status Code => ${result['statusCode']}");
+          printInfo(info: "Message => ${result['message']}");
+
+          // final storage = GetStorage();
+          // storage.write("bearerToken", result["token"]["token"]);
+
+          TokenStorage().storeToken(result["token"]["token"]);
+
+          printInfo(
+            info: "Bearer Token from Storage => ${TokenStorage().readToken()}",
+          );
+
+          Get.snackbar(
+            result["status"],
+            result["message"],
+            backgroundColor: Colors.green,
+            colorText: XMColors.light,
+            duration: const Duration(seconds: 5),
+          );
+
+          printInfo(info: "Logged User Data >>> ${result['data']} <<<");
+
+          return Get.to(
+            const CreatePIN(),
+            arguments: {
+              "data": result["data"],
+            },
+          );
+        } else {
+          printInfo(info: "${result["message"]}");
+          if (result["message"] != null || result["status"] != "failed") {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          } else {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+            Get.snackbar(
+              result["status"],
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          }
+        }
+      } catch (error) {
+        isLoading.toggle();
+        Get.snackbar("Error", "Unknown Error Occured, Try Again!");
+        return printInfo(
+          info: "Unknown Error Occured, Try Again!",
+        );
+      }
+    }
   }
 
   @override
@@ -63,7 +190,7 @@ class _SignInState extends State<SignIn> {
                 ),
                 const SizedBox(height: 26),
                 Form(
-                  key: signInController.signInFormKey,
+                  key: formKey,
                   child: Column(
                     children: [
                       TextInput(
@@ -72,22 +199,20 @@ class _SignInState extends State<SignIn> {
                         hintText: "johnpsmith@gmail.com",
                         inputType: TextInputType.emailAddress,
                         borderRadius: BorderRadius.circular(10),
-                        controller: signInController.emailController,
-                        onSaved: (value) =>
-                            signInController.data["email"] = value!,
+                        controller: emailController,
+                        onSaved: (value) => data["email"] = value!,
                         validator: (value) {
-                          return signInController.validateEmail(value!);
+                          return validateEmail(value!);
                         },
                       ),
                       const SizedBox(height: 25),
                       PasswordInput(
                         label: "Password",
                         hintText: "*******",
-                        controller: signInController.passwordController,
-                        onSaved: (value) =>
-                            signInController.data["password"] = value!,
+                        controller: passwordController,
+                        onSaved: (value) => data["password"] = value!,
                         validator: (value) {
-                          return signInController.validatePassword(value!);
+                          return validatePassword(value!);
                         },
                         suffixIcon: Padding(
                           padding: const EdgeInsets.only(right: 17),
@@ -132,7 +257,7 @@ class _SignInState extends State<SignIn> {
                         textColor: XMColors.light,
                         buttonColor: XMColors.primary,
                         action: () {
-                          signInController.checkSignInValidation();
+                          checkSignInValidation();
                         },
                       ),
                       const SizedBox(height: 25),

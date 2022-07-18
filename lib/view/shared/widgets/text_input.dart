@@ -59,18 +59,18 @@ class TextInput extends StatelessWidget {
             errorStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: XMColors.danger,
+              color: XMColors.red,
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: XMColors.danger,
+                color: XMColors.red,
                 width: 1.3,
               ),
               borderRadius: borderRadius,
             ),
             errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: XMColors.danger,
+                color: XMColors.red,
                 width: 1.3,
               ),
               borderRadius: borderRadius,

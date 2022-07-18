@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xendly_mobile/controller/core/user_auth.dart';
+import 'package:xendly_mobile/view/pages/reset_password.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
+import 'package:xendly_mobile/view/shared/routes.dart';
 
 class ForgotPwdController extends GetxController {
   final _userAuth = Get.put(UserAuth());
@@ -45,7 +47,7 @@ class ForgotPwdController extends GetxController {
       printInfo(info: "all fields are valid");
       formKey.currentState!.save();
       try {
-        final result = await _userAuth.loginUser(data);
+        final result = await _userAuth.forgotPassword(data);
         if (result["statusCode"] == 200) {
           printInfo(info: "${result["message"]}, ${result["status"]}");
           Get.snackbar(
@@ -55,8 +57,12 @@ class ForgotPwdController extends GetxController {
             colorText: XMColors.light,
             duration: const Duration(seconds: 5),
           );
-          // return Get.to(
-          //   const Home(),
+          return Get.to(() => ResetPassword(),
+              transition: Transition.rightToLeft,
+              arguments: {
+                "email": data["email"],
+              });
+          //   const ResetPassword(),
           //   arguments: {
           //     "email": data["email"],
           //   },

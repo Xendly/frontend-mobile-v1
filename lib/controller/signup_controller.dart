@@ -9,6 +9,8 @@ class SignUpController extends GetxController {
   final _userAuth = Get.put(UserAuth());
   GlobalKey<FormState> formKey = GlobalKey<FormState>(debugLabel: "_signUpKey");
 
+  bool agree = false;
+
   late TextEditingController firstNameController;
   late TextEditingController lastNameController;
   late TextEditingController emailController;
@@ -61,9 +63,10 @@ class SignUpController extends GetxController {
 
   // === fields validation === //
   String? validateFirstName(String value) {
+    final regEx = RegExp(r'^[a-zA-Z-]+$');
     if (GetUtils.isNullOrBlank(value)!) {
       return "Enter your First Name";
-    } else if (!GetUtils.isAlphabetOnly(value)) {
+    } else if (!regEx.hasMatch(value)) {
       return "Provide a valid First Name";
     } else {
       return null;
@@ -71,9 +74,10 @@ class SignUpController extends GetxController {
   }
 
   String? validateLastName(String value) {
+    final regEx = RegExp(r'^[a-zA-Z-]+$');
     if (GetUtils.isNullOrBlank(value)!) {
       return "Enter your Last Name";
-    } else if (!GetUtils.isAlphabetOnly(value)) {
+    } else if (!regEx.hasMatch(value)) {
       return "Provide a valid Last Name";
     } else {
       return null;
@@ -150,50 +154,54 @@ class SignUpController extends GetxController {
     if (!isValid) {
       printInfo(info: "Some fields are not valid");
     } else {
-      formKey.currentState!.save();
-      isLoading.toggle();
-      try {
-        final result = await _userAuth.registerUser(data);
+      if (!agree) {
+        print("accept our terms and conditions before proceeding");
+      } else {
+        formKey.currentState!.save();
         isLoading.toggle();
-        if (result['statusCode'] == 200 || result["statusCode"] == 201) {
-          printInfo(info: "${result["message"]}");
-          Get.snackbar(
-            result["status"],
-            result["message"],
-            backgroundColor: Colors.green,
-            colorText: XMColors.light,
-            duration: const Duration(seconds: 5),
-          );
-          return Get.to(
-            const VerifyEmail(),
-            arguments: {
-              "email": data["email"],
-            },
-          );
-        } else {
-          printInfo(info: "${result["message"]}");
-          if (result["message"] != null || result["status"] != "failed") {
+        try {
+          final result = await _userAuth.registerUser(data);
+          isLoading.toggle();
+          if (result['statusCode'] == 200 || result["statusCode"] == 201) {
+            printInfo(info: "${result["message"]}");
             Get.snackbar(
               result["status"],
               result["message"],
-            );
-          } else {
-            Get.closeAllSnackbars();
-            Get.snackbar(
-              result["status"].toString(),
-              result["message"],
-              backgroundColor: XMColors.danger,
+              backgroundColor: Colors.green,
               colorText: XMColors.light,
               duration: const Duration(seconds: 5),
             );
+            return Get.to(
+              const VerifyEmail(),
+              arguments: {
+                "email": data["email"],
+              },
+            );
+          } else {
+            printInfo(info: "${result["message"]}");
+            if (result["message"] != null || result["status"] != "failed") {
+              Get.snackbar(
+                result["status"],
+                result["message"],
+              );
+            } else {
+              Get.closeAllSnackbars();
+              Get.snackbar(
+                result["status"].toString(),
+                result["message"],
+                backgroundColor: XMColors.red,
+                colorText: XMColors.light,
+                duration: const Duration(seconds: 5),
+              );
+            }
           }
+        } catch (error) {
+          isLoading.toggle();
+          Get.snackbar("Error", "Unknown Error Occured, Try Again!");
+          return printInfo(
+            info: "Unknown Error Occured, Try Again!",
+          );
         }
-      } catch (error) {
-        isLoading.toggle();
-        Get.snackbar("Error", "Unknown Error Occured, Try Again!");
-        return printInfo(
-          info: "Unknown Error Occured, Try Again!",
-        );
       }
     }
   }

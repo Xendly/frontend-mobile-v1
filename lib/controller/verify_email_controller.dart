@@ -21,12 +21,6 @@ class VerifyEmailController extends GetxController {
     tokenController;
   }
 
-  // @override
-  // void onClose() {
-  //   tokenController.dispose();
-  //   // super.dispose();
-  // }
-
   // === fields validation === //
   String? validateTokenCode(String value) {
     if (GetUtils.isNullOrBlank(value)!) {
@@ -62,7 +56,7 @@ class VerifyEmailController extends GetxController {
             duration: const Duration(seconds: 5),
           );
           return Get.toNamed(
-            routes.createPIN,
+            routes.signIn,
           );
         } else {
           printInfo(

@@ -5,17 +5,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:xendly_mobile/controller/core/public_auth.dart';
-import 'package:xendly_mobile/controller/signup_controller.dart';
-import 'package:xendly_mobile/model/country_model.dart';
-import 'package:xendly_mobile/view/shared/colors.dart';
-import 'package:xendly_mobile/view/shared/widgets.dart';
-import 'package:xendly_mobile/view/shared/widgets/custom_checkbox.dart';
-import 'package:xendly_mobile/view/shared/widgets/dropdown_input.dart';
-import 'package:xendly_mobile/view/shared/widgets/password_input.dart';
-import 'package:xendly_mobile/view/shared/widgets/solid_button.dart';
-import 'package:xendly_mobile/view/shared/widgets/text_input.dart';
-import "package:xendly_mobile/view/shared/routes.dart" as routes;
+import 'package:xendly_mobile/controller/core/user_auth.dart';
+import 'package:xendly_mobile/view/pages/verify_email.dart';
+import '../../controller/core/public_auth.dart';
+import '../../controller/signup_controller.dart';
+import '../../model/country_model.dart';
+import '../shared/colors.dart';
+import '../shared/widgets.dart';
+import '../shared/widgets/custom_checkbox.dart';
+import '../shared/widgets/dropdown_input.dart';
+import '../shared/widgets/password_input.dart';
+import '../shared/widgets/solid_button.dart';
+import '../shared/widgets/text_input.dart';
+import "../shared/routes.dart" as routes;
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -29,6 +31,11 @@ class _SignUpState extends State<SignUp> {
   final _publicAuth = PublicAuth();
   CountryModel? countrySelected;
 
+  final _userAuth = Get.put(UserAuth());
+  GlobalKey<FormState> formKey = GlobalKey<FormState>(debugLabel: "_signUpKey");
+
+  bool agree = false;
+
   // === unsorted === //
   bool? value = false;
 
@@ -36,13 +43,6 @@ class _SignUpState extends State<SignUp> {
   void togglePassword() {
     setState(() {
       _obscureText = !_obscureText;
-    });
-  }
-
-  bool _isLoading = false;
-  void isLoading() {
-    setState(() {
-      _isLoading = true;
     });
   }
 
@@ -54,6 +54,16 @@ class _SignUpState extends State<SignUp> {
   void initState() {
     super.initState();
     futureCountry = _publicAuth.getCountry();
+    firstNameController = TextEditingController();
+    lastNameController = TextEditingController();
+    emailController = TextEditingController();
+    countryController = TextEditingController();
+    phoneController = TextEditingController();
+    dobController = TextEditingController();
+    passwordController = TextEditingController();
+    emailController.addListener(() {
+      controllerEmail.value = emailController.text;
+    });
   }
 
   @override
@@ -63,7 +73,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    var signUpController = Get.put(SignUpController());
+    // var = Get.put());
     return Scaffold(
       backgroundColor: XMColors.light,
       extendBody: true,
@@ -96,7 +106,7 @@ class _SignUpState extends State<SignUp> {
                 ),
                 const SizedBox(height: 26),
                 Form(
-                  key: signUpController.formKey,
+                  key: formKey,
                   child: Column(
                     children: [
                       TextInput(
@@ -105,11 +115,10 @@ class _SignUpState extends State<SignUp> {
                         hintText: "Johnathan",
                         inputType: TextInputType.name,
                         borderRadius: BorderRadius.circular(10),
-                        controller: signUpController.firstNameController,
-                        onSaved: (value) =>
-                            signUpController.data["firstName"] = value!,
+                        controller: firstNameController,
+                        onSaved: (value) => data["firstName"] = value!,
                         validator: (value) {
-                          return signUpController.validateFirstName(value!);
+                          return validateFirstName(value!);
                         },
                       ),
                       const SizedBox(height: 25),
@@ -119,11 +128,10 @@ class _SignUpState extends State<SignUp> {
                         hintText: "Percival Smith",
                         inputType: TextInputType.name,
                         borderRadius: BorderRadius.circular(10),
-                        controller: signUpController.lastNameController,
-                        onSaved: (value) =>
-                            signUpController.data["lastName"] = value!,
+                        controller: lastNameController,
+                        onSaved: (value) => data["lastName"] = value!,
                         validator: (value) {
-                          return signUpController.validateLastName(value!);
+                          return validateLastName(value!);
                         },
                       ),
                       const SizedBox(height: 25),
@@ -133,11 +141,10 @@ class _SignUpState extends State<SignUp> {
                         hintText: "johnpsmith@gmail.com",
                         inputType: TextInputType.emailAddress,
                         borderRadius: BorderRadius.circular(10),
-                        controller: signUpController.emailController,
-                        onSaved: (value) =>
-                            signUpController.data["email"] = value!,
+                        controller: emailController,
+                        onSaved: (value) => data["email"] = value!,
                         validator: (value) {
-                          return signUpController.validateEmail(value!);
+                          return validateEmail(value!);
                         },
                       ),
                       const SizedBox(height: 25),
@@ -164,10 +171,10 @@ class _SignUpState extends State<SignUp> {
                                   countrySelected = value!;
                                 });
                               },
-                              onSaved: (value) => signUpController
-                                  .data["country"] = value?.country ?? "",
+                              onSaved: (value) =>
+                                  data["country"] = value?.country ?? "",
                               validator: (value) {
-                                return signUpController.validateCountry(value);
+                                return validateCountry(value);
                               },
                             );
                           } else if (snapshot.hasError) {
@@ -198,14 +205,14 @@ class _SignUpState extends State<SignUp> {
                         hintText: "9045637294",
                         inputType: TextInputType.phone,
                         borderRadius: BorderRadius.circular(10),
-                        controller: signUpController.phoneController,
+                        controller: phoneController,
                         onSaved: (value) {
                           printInfo(info: value ?? '');
-                          signUpController.data["phoneNo"] =
+                          data["phoneNo"] =
                               '+${countrySelected!.dialCode! + value!}';
                         },
                         validator: (value) {
-                          return signUpController.validatePhone(value!);
+                          return validatePhone(value!);
                         },
                       ),
                       const SizedBox(height: 25),
@@ -213,7 +220,7 @@ class _SignUpState extends State<SignUp> {
                         label: "Date of Birth",
                         hintText: "30th June 2022",
                         borderRadius: BorderRadius.circular(10),
-                        controller: signUpController.dobController,
+                        controller: dobController,
                         readOnly: true,
                         onTap: () async {
                           DateTime? pickDob = await showDatePicker(
@@ -230,58 +237,26 @@ class _SignUpState extends State<SignUp> {
                                 DateFormat('yyyy-MM-dd').format(pickDob);
                             setState(
                               () {
-                                signUpController.dobController.text =
-                                    formattedDate;
+                                dobController.text = formattedDate;
                               },
                             );
                           } else {
                             return null;
                           }
                         },
-                        onSaved: (value) =>
-                            signUpController.data["dob"] = value!,
+                        onSaved: (value) => data["dob"] = value!,
                         validator: (value) {
-                          return signUpController.validateDob(value!);
+                          return validateDob(value!);
                         },
-                      ),
-                      const SizedBox(height: 25),
-                      PasswordInput(
-                        label: "Transaction PIN",
-                        hintText: "*******",
-                        controller: signUpController.pinController,
-                        onSaved: (value) =>
-                            signUpController.data["pin"] = value!,
-                        validator: (value) {
-                          return signUpController.validatePIN(value!);
-                        },
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 17),
-                          child: GestureDetector(
-                            onTap: togglePassword,
-                            child: _obscureText
-                                ? SvgPicture.asset(
-                                    "assets/icons/eye.svg",
-                                    width: 22,
-                                    height: 22,
-                                  )
-                                : SvgPicture.asset(
-                                    "assets/icons/eye-slash.svg",
-                                    width: 22,
-                                    height: 22,
-                                  ),
-                          ),
-                        ),
-                        obscureText: _obscureText ? true : false,
                       ),
                       const SizedBox(height: 25),
                       PasswordInput(
                         label: "Password for Security",
                         hintText: "*******",
-                        controller: signUpController.passwordController,
-                        onSaved: (value) =>
-                            signUpController.data["password"] = value!,
+                        controller: passwordController,
+                        onSaved: (value) => data["password"] = value!,
                         validator: (value) {
-                          return signUpController.validatePassword(value!);
+                          return validatePassword(value!);
                         },
                         suffixIcon: Padding(
                           padding: const EdgeInsets.only(right: 17),
@@ -303,15 +278,89 @@ class _SignUpState extends State<SignUp> {
                         obscureText: _obscureText ? true : false,
                       ),
                       const SizedBox(height: 22),
-                      const CustomCheckbox(),
+                      // const CustomCheckbox(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 25,
+                            child: Checkbox(
+                              value: agree,
+                              onChanged: (bool? agree) {
+                                setState(() {
+                                  this.agree = agree ?? false;
+                                });
+                              },
+                              activeColor: XMColors.accent,
+                              checkColor: XMColors.light,
+                              side: const BorderSide(
+                                color: XMColors.lightGray,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 18),
+                          Flexible(
+                            child: RichText(
+                              text: const TextSpan(
+                                text:
+                                    "By clicking on Create Account, you agree to our ",
+                                style: TextStyle(
+                                  fontFamily: "TTFirsNeue",
+                                  color: XMColors.gray,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.45,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: "Terms and Conditions ",
+                                    style: TextStyle(
+                                      fontFamily: "TTFirsNeue",
+                                      color: XMColors.primary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.45,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "as well as our ",
+                                    style: TextStyle(
+                                      fontFamily: "TTFirsNeue",
+                                      color: XMColors.gray,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.45,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "Privacy Policy",
+                                    style: TextStyle(
+                                      fontFamily: "TTFirsNeue",
+                                      color: XMColors.primary,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.45,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 50),
                       Obx(() => SolidButton(
                             text: "Create Account",
                             textColor: XMColors.light,
                             buttonColor: XMColors.primary,
-                            isLoading: signUpController.isLoading.value,
+                            isLoading: isLoading.value,
                             action: () {
-                              signUpController.checkSignUpValidation();
+                              checkSignUpValidation();
                             },
                           )),
                       const SizedBox(height: 25),
@@ -337,5 +386,157 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
+  }
+
+  late TextEditingController firstNameController;
+  late TextEditingController lastNameController;
+  late TextEditingController emailController;
+  late TextEditingController countryController;
+  late TextEditingController phoneController;
+  late TextEditingController dobController;
+  late TextEditingController passwordController;
+
+  RxString controllerEmail = ''.obs;
+  final isLoading = false.obs;
+
+  Map<String, dynamic> data = {
+    "firstName": "",
+    "lastName": "",
+    "email": "",
+    "country": "",
+    "phoneNo": "",
+    "dob": "",
+    "password": "",
+  };
+
+  // === fields validation === //
+  String? validateFirstName(String value) {
+    final regEx = RegExp(r'^[a-zA-Z-]+$');
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your First Name";
+    } else if (!regEx.hasMatch(value)) {
+      return "Provide a valid First Name";
+    } else {
+      return null;
+    }
+  }
+
+  String? validateLastName(String value) {
+    final regEx = RegExp(r'^[a-zA-Z-]+$');
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Last Name";
+    } else if (!regEx.hasMatch(value)) {
+      return "Provide a valid Last Name";
+    } else {
+      return null;
+    }
+  }
+
+  String? validateEmail(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Email Address";
+    } else if (!GetUtils.isEmail(value)) {
+      return "Provide a valid Email Address";
+    } else {
+      return null;
+    }
+  }
+
+  String? validateCountry(dynamic value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Select your Country of Residence";
+    } else {
+      return null;
+    }
+  }
+
+  String? validatePhone(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Phone Number";
+    } else if (!GetUtils.isNum(value)) {
+      return "Provide a valid Phone Number";
+    } else {
+      return null;
+    }
+  }
+
+  String? validateDob(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Date of Birth";
+    } else {
+      return null;
+    }
+  }
+
+  String? validatePassword(String value) {
+    String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
+    RegExp regExp = RegExp(pattern);
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Security Password";
+    } else if (GetUtils.isLengthLessOrEqual(value, 7)) {
+      return "Password must contain 8 characters";
+    } else if (!regExp.hasMatch(value)) {
+      return "Password must include:\n- 1 uppercase\n- 1 lowercase\n- 1 number";
+    } else {
+      return null;
+    }
+  }
+
+  // === CHECK THE WHOLE VALIDATION === //
+  void checkSignUpValidation() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      printInfo(info: "Some fields are not valid");
+    } else {
+      if (!agree) {
+        print("accept our terms and conditions before proceeding");
+      } else {
+        formKey.currentState!.save();
+        isLoading.toggle();
+        try {
+          final result = await _userAuth.registerUser(data);
+          isLoading.toggle();
+          if (result['statusCode'] == 200 || result["statusCode"] == 201) {
+            printInfo(info: "${result["message"]}");
+            Get.snackbar(
+              result["status"],
+              result["message"],
+              backgroundColor: Colors.green,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+            return Get.to(
+              const VerifyEmail(),
+              arguments: {
+                "email": data["email"],
+              },
+            );
+          } else {
+            printInfo(info: "${result["message"]}");
+            if (result["message"] != null || result["status"] != "failed") {
+              Get.snackbar(
+                result["status"],
+                result["message"],
+              );
+            } else {
+              Get.closeAllSnackbars();
+              Get.snackbar(
+                result["status"].toString(),
+                result["message"],
+                backgroundColor: XMColors.red,
+                colorText: XMColors.light,
+                duration: const Duration(seconds: 5),
+              );
+            }
+          }
+        } catch (error) {
+          isLoading.toggle();
+          Get.snackbar("Error", "Unknown Error Occured, Try Again!");
+          return printInfo(
+            info: "Unknown Error Occured, Try Again!",
+          );
+        }
+      }
+    }
   }
 }

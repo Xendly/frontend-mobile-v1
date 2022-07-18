@@ -48,17 +48,17 @@ class PasswordInput extends StatelessWidget {
             errorStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: XMColors.danger,
+              color: XMColors.red,
             ),
             focusedErrorBorder: const OutlineInputBorder(
               borderSide: BorderSide(
-                color: XMColors.danger,
+                color: XMColors.red,
                 width: 1.3,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: XMColors.danger,
+                color: XMColors.red,
                 width: 1.3,
               ),
               borderRadius: BorderRadius.circular(10),
