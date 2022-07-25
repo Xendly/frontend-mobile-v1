@@ -34,7 +34,7 @@ class _CreatePINState extends State<CreatePIN> {
 
     printInfo(info: "Pincode bool from Login => ${Get.arguments}");
 
-    if (Get.arguments) {
+    if (Get.arguments != null) {
       Future.microtask(() => Get.toNamed(routes.home));
     } else {
       Future.microtask(() => Get.toNamed(routes.createPIN));

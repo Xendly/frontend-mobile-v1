@@ -1,11 +1,20 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_utils/src/extensions/dynamic_extensions.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:xendly_mobile/controller/core/beneficiary_auth.dart';
+import 'package:xendly_mobile/controller/core/public_auth.dart';
+import 'package:xendly_mobile/model/country_model.dart';
 import 'package:xendly_mobile/view/pages/tabs/transfer_tabs/favourites.dart';
 import 'package:xendly_mobile/view/pages/tabs/transfer_tabs/recipients.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets.dart';
+import 'package:xendly_mobile/view/shared/widgets/dropdown_input.dart';
+import 'package:xendly_mobile/view/shared/widgets/solid_button.dart';
 import 'package:xendly_mobile/view/shared/widgets/tabPage_title.dart';
 import 'package:xendly_mobile/view/shared/widgets/text_input.dart';
 import 'package:xendly_mobile/view/shared/routes.dart' as routes;
@@ -78,16 +87,125 @@ class _TransferState extends State<Transfer>
 
   String searchString = "";
 
+  late Future<List<CountryModel>> futureCountry;
+  final _publicAuth = PublicAuth();
+  CountryModel? countryCodeSelected;
+
+  final _beneficiaryAuth = BeneficiaryAuth();
+
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  TextEditingController? name = TextEditingController();
+  TextEditingController? phoneNo = TextEditingController();
+  TextEditingController? country = TextEditingController();
+
+  Map<String, dynamic> beneficiaryData = {
+    "name": "",
+    "phone": "",
+    "country": "",
+  };
+
   @override
   void initState() {
     super.initState();
+    futureCountry = _publicAuth.getCountry();
     _tabController = TabController(vsync: this, length: myTabs.length);
+    name;
+    phoneNo;
+    country;
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  String? validateName(String value) {
+    final regEx = RegExp(r'^[a-zA-Z- ]+$');
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your First Name";
+    } else if (!regEx.hasMatch(value)) {
+      return "Provide a valid First Name";
+    } else {
+      return null;
+    }
+  }
+
+  String? validateCountry(dynamic value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Select your Country of Residence";
+    } else {
+      return null;
+    }
+  }
+
+  String? validatePhone(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Enter your Phone Number";
+    } else if (!GetUtils.isNum(value)) {
+      return "Provide a valid Phone Number";
+    } else {
+      return null;
+    }
+  }
+
+  void addBeneficiary() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      printInfo(info: "some fields are invalid");
+    } else {
+      printInfo(info: "all fields are valid");
+      formKey.currentState!.save();
+      try {
+        final result = await _beneficiaryAuth.addBeneficiary(beneficiaryData);
+        if (result["statusCode"] == 200) {
+          printInfo(info: "${result["statusCode"]}");
+          Get.snackbar(
+            result["status"],
+            result["message"],
+            backgroundColor: Colors.green,
+            colorText: XMColors.light,
+            duration: const Duration(seconds: 5),
+          );
+          return Get.back();
+        } else {
+          printInfo(info: "${result["message"]}, ${result["statusCode"]}");
+          if (result["message"] != null || result["status"] != "failed") {
+            Get.closeAllSnackbars();
+            printInfo(info: "${result["message"]}");
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          } else {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+            Get.snackbar(
+              result["status"],
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          }
+        }
+      } catch (error) {
+        Get.snackbar("Error", "Unknown Error Occured, Try Again!");
+        return printInfo(
+          info: "Unknown Error Occured, Try Again!",
+        );
+      }
+    }
   }
 
   @override
@@ -307,6 +425,337 @@ class _TransferState extends State<Transfer>
                 //     }
                 //   },
                 // ),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.center,
+                  child: GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 50,
+                                horizontal: 22,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  GestureDetector(
+                                    child: Text(
+                                      "Add from Contacts",
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  const Divider(),
+                                  const SizedBox(height: 14),
+                                  GestureDetector(
+                                    onTap: () => {
+                                      showMaterialModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Wrap(
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            alignment: WrapAlignment.center,
+                                            children: [
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 38,
+                                                ),
+                                                color: XMColors.light,
+                                                child: Form(
+                                                  key: formKey,
+                                                  child: Column(
+                                                    children: [
+                                                      Text(
+                                                        "Enter the Beneficiary Details",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .subtitle1!
+                                                            .copyWith(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                      ),
+                                                      const SizedBox(height: 8),
+                                                      Text(
+                                                        "Enter beneficiary's details to add to your list",
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyText1!
+                                                            .copyWith(
+                                                              color:
+                                                                  XMColors.gray,
+                                                            ),
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 24),
+                                                      // TextInput(
+                                                      //   label: "Date of Birth",
+                                                      //   hintText:
+                                                      //       "30th June 2022",
+                                                      //   borderRadius:
+                                                      //       BorderRadius.circular(
+                                                      //           10),
+                                                      //   controller: dobController,
+                                                      //   readOnly: true,
+                                                      //   onTap: () async {
+                                                      //     DateTime? pickDob =
+                                                      //         await showDatePicker(
+                                                      //       context: context,
+                                                      //       initialDate:
+                                                      //           DateTime.now(),
+                                                      //       firstDate: DateTime(
+                                                      //         2000,
+                                                      //       ),
+                                                      //       lastDate:
+                                                      //           DateTime(2101),
+                                                      //     );
+
+                                                      //     if (pickDob != null) {
+                                                      //       String formattedDate =
+                                                      //           DateFormat(
+                                                      //                   'yyyy-MM-dd')
+                                                      //               .format(
+                                                      //                   pickDob);
+                                                      //       setState(
+                                                      //         () {
+                                                      //           dobController
+                                                      //                   .text =
+                                                      //               formattedDate;
+                                                      //         },
+                                                      //       );
+                                                      //     } else {
+                                                      //       return null;
+                                                      //     }
+                                                      //   },
+                                                      //   onSaved: (value) =>
+                                                      //       data["dob"] = value!,
+                                                      //   validator: (value) {
+                                                      //     return validateDob(
+                                                      //         value!);
+                                                      //   },
+                                                      // ),
+                                                      const SizedBox(
+                                                          height: 25),
+                                                      TextInput(
+                                                        readOnly: false,
+                                                        label:
+                                                            "Beneficiary Name",
+                                                        hintText: "John Wick",
+                                                        inputType:
+                                                            TextInputType.name,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        controller: name,
+                                                        onSaved: (value) =>
+                                                            beneficiaryData[
+                                                                    "name"] =
+                                                                value!,
+                                                        validator: (value) {
+                                                          return validateName(
+                                                            value!,
+                                                          );
+                                                        },
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 25),
+                                                      FutureBuilder<
+                                                          List<CountryModel>>(
+                                                        future: futureCountry,
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                              .hasData) {
+                                                            return DropdownInput<
+                                                                CountryModel>(
+                                                              label:
+                                                                  "Country of Residence",
+                                                              hintText:
+                                                                  "Venezuela",
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10),
+                                                              items: snapshot
+                                                                  .data
+                                                                  ?.map(
+                                                                      (country) {
+                                                                return DropdownMenuItem<
+                                                                    CountryModel>(
+                                                                  child: body(
+                                                                    "(${country.dialCode}) ${country.country}",
+                                                                    XMColors
+                                                                        .primary,
+                                                                    16,
+                                                                  ),
+                                                                  value:
+                                                                      country,
+                                                                );
+                                                              }).toList(),
+                                                              action:
+                                                                  (CountryModel?
+                                                                      value) {
+                                                                setState(() {
+                                                                  countryCodeSelected =
+                                                                      value!;
+                                                                });
+                                                              },
+                                                              onSaved: (value) =>
+                                                                  beneficiaryData[
+                                                                          "country"] =
+                                                                      value?.country ??
+                                                                          "",
+                                                              validator:
+                                                                  (value) {
+                                                                return validateCountry(
+                                                                    value);
+                                                              },
+                                                            );
+                                                          } else if (snapshot
+                                                              .hasError) {
+                                                            return Text(
+                                                                "${snapshot.error}");
+                                                          }
+                                                          return const Center(
+                                                            child:
+                                                                CupertinoActivityIndicator(),
+                                                          );
+                                                        },
+                                                      ),
+                                                      const SizedBox(
+                                                          height: 25),
+                                                      TextInput(
+                                                        readOnly: false,
+                                                        label: "Phone Number",
+                                                        prefixIcon: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                            left: 17,
+                                                            right: 0,
+                                                          ),
+                                                          child: body(
+                                                            "+${countryCodeSelected?.country ?? ''}",
+                                                            XMColors.gray,
+                                                            16,
+                                                            TextAlign.center,
+                                                            FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        hintText: "9045637294",
+                                                        inputType:
+                                                            TextInputType.phone,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        controller: phoneNo,
+                                                        onSaved: (value) {
+                                                          printInfo(
+                                                              info:
+                                                                  value ?? '');
+                                                          beneficiaryData[
+                                                                  "phoneNo"] =
+                                                              '+${countryCodeSelected!.dialCode! + value!}';
+                                                        },
+                                                        validator: (value) {
+                                                          return validatePhone(
+                                                              value!);
+                                                        },
+                                                      ),
+                                                      // TextInput(
+                                                      //   readOnly: false,
+                                                      //   label: "Phone Number",
+                                                      //   prefixIcon: Padding(
+                                                      //     padding:
+                                                      //         const EdgeInsets
+                                                      //             .only(
+                                                      //       left: 17,
+                                                      //       right: 0,
+                                                      //     ),
+                                                      //     child: body(
+                                                      //       "+${countrySelected?.dialCode ?? ''}",
+                                                      //       XMColors.gray,
+                                                      //       16,
+                                                      //       TextAlign.center,
+                                                      //       FontWeight.w500,
+                                                      //     ),
+                                                      //   ),
+                                                      //   hintText: "9045637294",
+                                                      //   inputType:
+                                                      //       TextInputType.phone,
+                                                      //   borderRadius:
+                                                      //       BorderRadius.circular(
+                                                      //           10),
+                                                      //   controller:
+                                                      //       phoneController,
+                                                      //   onSaved: (value) {
+                                                      //     printInfo(
+                                                      //         info: value ?? '');
+                                                      //     data["phoneNo"] =
+                                                      //         '+${countrySelected!.dialCode! + value!}';
+                                                      //   },
+                                                      //   validator: (value) {
+                                                      //     return validatePhone(
+                                                      //         value!);
+                                                      //   },
+                                                      // ),
+                                                      const SizedBox(
+                                                          height: 50),
+                                                      SolidButton(
+                                                        text: "Create Account",
+                                                        textColor:
+                                                            XMColors.light,
+                                                        buttonColor:
+                                                            XMColors.primary,
+                                                        action: () {
+                                                          addBeneficiary();
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    },
+                                    child: Text(
+                                      "Add Manually",
+                                      style:
+                                          Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Text(
+                      "New Beneficiary +",
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 26),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 18),

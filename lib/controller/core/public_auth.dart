@@ -74,7 +74,7 @@ class PublicAuth {
           .map(((virtualAccount) => VirtualAccount.fromJson(virtualAccount)))
           .toList();
     } else {
-      throw Exception(response.reasonPhrase);
+      Exception(response.reasonPhrase);
     }
   }
 
