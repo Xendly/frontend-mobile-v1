@@ -65,72 +65,72 @@ List<GetPage<dynamic>> getPages = [
         name: splash,
         page: () => Splash(),
       ),
-      
+
     case onboarding:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const Onboarding(),
       );
     case home:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const Home(),
       );
     case filesAndDocs:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const FilesAndDocuments(),
       );
     case signUp:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const SignUp(),
       );
     case signIn:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const SignIn(),
       );
     case withdraw:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const Withdraw(),
       );
     case editProfile:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const EditProfile(),
       );
     case notifications:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const Notifications(),
       );
     case forgotPassword:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const ForgotPassword(),
       );
     case helpAndSupport:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const HelpAndSupport(),
       );
     case resetPassword:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const ResetPassword(),
       );
 
     // === SECURITY === //
     case personalSecurity:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const PersonalSecurity(),
       );
     case sendMoney:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const SendMoney(),
       );
 
     case verifyEmail:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const VerifyEmail(),
       );
     case createPIN:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const CreatePIN(),
       );
     case exchangeCash:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const ExchangeCash(),
       );
     // case chooseFundMethod:
@@ -138,30 +138,31 @@ List<GetPage<dynamic>> getPages = [
     //     builder: (context) => const ChooseFundMethod(),
     //   );
     case confirmTransaction:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const ConfirmTransaction(),
       );
     case enterPIN:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const EnterPIN(),
       );
     case transactionSuccess:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const TransactionSuccess(),
       );
     case walletDetails:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const WalletDetails(),
       );
     case virtualAccounts:
-      return MaterialPageRoute(
+      return Getpage(
         builder: (context) => const VirtualAccounts(),
-      );
+      ),
 
     // === MONEY MANAGEMENT == //
 
-    case addMoney:
-      return MaterialPageRoute(
+    
+      return Getpage(
+        name: addMoney,
         builder: (context) => const AddMoney(),
       );
   //  return MaterialPageRoute(
