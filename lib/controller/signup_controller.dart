@@ -50,17 +50,6 @@ class SignUpController extends GetxController {
     });
   }
 
-  // @override
-  // void onClose() {
-  //   firstNameController.dispose();
-  //   lastNameController.dispose();
-  //   emailController.dispose();
-  //   countryController.dispose();
-  //   phoneController.dispose();
-  //   dobController.dispose();
-  //   passwordController.dispose();
-  // }
-
   // === fields validation === //
   String? validateFirstName(String value) {
     final regEx = RegExp(r'^[a-zA-Z-]+$');
