@@ -30,7 +30,7 @@ import 'package:http/http.dart' as http;
 // }
 
 class WalletAuth {
-  Future<List<Wallet>?> getWallets() async {
+  Future<List<Wallet>> getWallets() async {
     final token = TokenStorage().readToken();
     http.Response response = await http.get(
       Uri.parse(
@@ -44,7 +44,8 @@ class WalletAuth {
     );
 
     if (response.statusCode == 200) {
-      final List responseData = jsonDecode(response.body)['data'];
+      final List? responseData = jsonDecode(response.body)['data'];
+      if (responseData == null) return [];
       return responseData.map(((wallet) => Wallet.fromJson(wallet))).toList();
     } else {
       throw Exception(response.reasonPhrase);

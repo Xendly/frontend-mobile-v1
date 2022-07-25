@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:xendly_mobile/model/wallet_model.dart';
 import 'package:xendly_mobile/view/pages/add_money.dart';
 import 'package:xendly_mobile/view/pages/check_pin.dart';
@@ -52,6 +54,132 @@ const String sendMoney = "sendMoney";
 const String addMoney = "addMoney";
 const String helpAndSupport = "helpAndSupport";
 const String filesAndDocs = "filesAndDocs";
+
+List<GetPage<dynamic>> getPages = [
+  GetPage(
+    name: chooseFundMethod,
+    page: () => const ChooseFundMethod(),
+  ),
+ 
+       GetPage(
+        name: splash,
+        page: () => Splash(),
+      ),
+      
+    case onboarding:
+      return MaterialPageRoute(
+        builder: (context) => const Onboarding(),
+      );
+    case home:
+      return MaterialPageRoute(
+        builder: (context) => const Home(),
+      );
+    case filesAndDocs:
+      return MaterialPageRoute(
+        builder: (context) => const FilesAndDocuments(),
+      );
+    case signUp:
+      return MaterialPageRoute(
+        builder: (context) => const SignUp(),
+      );
+    case signIn:
+      return MaterialPageRoute(
+        builder: (context) => const SignIn(),
+      );
+    case withdraw:
+      return MaterialPageRoute(
+        builder: (context) => const Withdraw(),
+      );
+    case editProfile:
+      return MaterialPageRoute(
+        builder: (context) => const EditProfile(),
+      );
+    case notifications:
+      return MaterialPageRoute(
+        builder: (context) => const Notifications(),
+      );
+    case forgotPassword:
+      return MaterialPageRoute(
+        builder: (context) => const ForgotPassword(),
+      );
+    case helpAndSupport:
+      return MaterialPageRoute(
+        builder: (context) => const HelpAndSupport(),
+      );
+    case resetPassword:
+      return MaterialPageRoute(
+        builder: (context) => const ResetPassword(),
+      );
+
+    // === SECURITY === //
+    case personalSecurity:
+      return MaterialPageRoute(
+        builder: (context) => const PersonalSecurity(),
+      );
+    case sendMoney:
+      return MaterialPageRoute(
+        builder: (context) => const SendMoney(),
+      );
+
+    case verifyEmail:
+      return MaterialPageRoute(
+        builder: (context) => const VerifyEmail(),
+      );
+    case createPIN:
+      return MaterialPageRoute(
+        builder: (context) => const CreatePIN(),
+      );
+    case exchangeCash:
+      return MaterialPageRoute(
+        builder: (context) => const ExchangeCash(),
+      );
+    // case chooseFundMethod:
+    //   return MaterialPageRoute(
+    //     builder: (context) => const ChooseFundMethod(),
+    //   );
+    case confirmTransaction:
+      return MaterialPageRoute(
+        builder: (context) => const ConfirmTransaction(),
+      );
+    case enterPIN:
+      return MaterialPageRoute(
+        builder: (context) => const EnterPIN(),
+      );
+    case transactionSuccess:
+      return MaterialPageRoute(
+        builder: (context) => const TransactionSuccess(),
+      );
+    case walletDetails:
+      return MaterialPageRoute(
+        builder: (context) => const WalletDetails(),
+      );
+    case virtualAccounts:
+      return MaterialPageRoute(
+        builder: (context) => const VirtualAccounts(),
+      );
+
+    // === MONEY MANAGEMENT == //
+
+    case addMoney:
+      return MaterialPageRoute(
+        builder: (context) => const AddMoney(),
+      );
+  //  return MaterialPageRoute(
+  //       builder: (context) =>
+  //     );
+  // GetPage(name:"/first/:id", page: () => First()),
+];
+
+   String initialRoute({bool isLoggedIn = false}) {
+    final lastPage = GetStorage().read<Map<String, dynamic>?>("last_page");
+    if (lastPage != null) {
+      return lastPage['route'];
+    } else if (isLoggedIn) {
+      return home;
+    } else {
+      return splash;
+    }
+  }
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {
@@ -126,10 +254,10 @@ Route<dynamic> controller(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const ExchangeCash(),
       );
-    case chooseFundMethod:
-      return MaterialPageRoute(
-        builder: (context) => const ChooseFundMethod(),
-      );
+    // case chooseFundMethod:
+    //   return MaterialPageRoute(
+    //     builder: (context) => const ChooseFundMethod(),
+    //   );
     case confirmTransaction:
       return MaterialPageRoute(
         builder: (context) => const ConfirmTransaction(),

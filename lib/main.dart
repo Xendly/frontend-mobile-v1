@@ -103,9 +103,10 @@ class XendlyMobile extends StatelessWidget {
           ),
         ),
       ),
-      home: const Onboarding(),
+      // home: const Onboarding(),
+      // getPages: route.getPages,
       onGenerateRoute: route.controller,
-      initialRoute: route.splash,
+      initialRoute: route.initialRoute(),
     );
   }
 }

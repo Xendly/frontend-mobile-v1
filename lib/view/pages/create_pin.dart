@@ -30,15 +30,15 @@ class _CreatePINState extends State<CreatePIN> {
   @override
   void initState() {
     super.initState();
-    pinController;
+    // pinController;
 
-    printInfo(info: "Pincode bool from Login => ${Get.arguments}");
+    // printInfo(info: "Pincode bool from Login => ${Get.arguments}");
 
-    if (Get.arguments) {
-      Future.microtask(() => Get.toNamed(routes.home));
-    } else {
-      Future.microtask(() => Get.toNamed(routes.createPIN));
-    }
+    // if (Get.arguments == null) {
+    //   Future.microtask(() => Get.toNamed(routes.home));
+    // } else {
+    //   Future.microtask(() => Get.toNamed(routes.createPIN));
+    // }
   }
 
   // === fields validation === //
@@ -80,9 +80,9 @@ class _CreatePINState extends State<CreatePIN> {
               colorText: XMColors.light,
               duration: const Duration(seconds: 5),
             );
-            // return Get.toNamed(
-            //   routes.createPIN,
-            // );
+            return Get.toNamed(
+              routes.home,
+            );
           } else {
             printInfo(
               info: ">>> ${result['message']} ==> ${result['statusCode']} <<<",

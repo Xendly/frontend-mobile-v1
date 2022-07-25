@@ -110,16 +110,18 @@ class _SignInState extends State<SignIn> {
           );
 
           printInfo(info: "Logged User Data >>> ${result['data']} <<<");
-          bool? hasPincode = result["data"]["has_pincode"];
+          bool? hasPincode = result["data"]["has_pincode"] as bool;
           printInfo(info: "Pincode $hasPincode");
 
-          return Get.to(
-            const CreatePIN(),
-            arguments: hasPincode,
-            //   arguments: {
-            //     "has_pincode": hasPincode,
-            //   },
-          );
+          return hasPincode
+              ? Get.toNamed(routes.home)
+              : Get.to(
+                  const CreatePIN(),
+                  arguments: hasPincode,
+                  //   arguments: {
+                  //     "has_pincode": hasPincode,
+                  //   },
+                );
         } else {
           printInfo(info: "${result["message"]}");
           if (result["message"] != null || result["status"] != "failed") {

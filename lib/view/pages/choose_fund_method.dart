@@ -6,6 +6,7 @@ import 'package:xendly_mobile/controller/core/public_auth.dart';
 import 'package:xendly_mobile/controller/core/user_auth.dart';
 import 'package:xendly_mobile/model/user_model.dart';
 import 'package:xendly_mobile/model/virtual_account.dart';
+import 'package:xendly_mobile/model/wallet_model.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 import 'package:xendly_mobile/view/shared/widgets/buttons/rounded.dart';
 import 'package:xendly_mobile/view/shared/widgets/micro_list_item.dart';
@@ -23,12 +24,18 @@ class _ChooseFundMethodState extends State<ChooseFundMethod> {
   // late Future<VirtualAccount> virtualAccount;
   // final publicAuth = PublicAuth();
   // late int currentUser;
-  late List<VirtualAccount>? _userVAccount = [];
+  List<VirtualAccount>? _userVAccount = [];
+
+  Wallet? _wallet;
 
   @override
   void initState() {
     super.initState();
+    // _wallet = Get.arguments;
+
+    print(Get.arguments);
     // virtualAccount = publicAuth.getVirtualAccount();
+
     _getData();
   }
 
@@ -44,6 +51,7 @@ class _ChooseFundMethodState extends State<ChooseFundMethod> {
 
   @override
   Widget build(BuildContext context) {
+    print(Get.arguments);
     const _divider = Divider(
       height: 0,
       color: XMColors.gray_70,

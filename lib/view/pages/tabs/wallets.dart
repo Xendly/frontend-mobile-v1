@@ -23,7 +23,7 @@ class _WalletsState extends State<Wallets> {
   // === WALLETS API ===//
   // late Future<List<Wallet>> futureWallet;
   // final walletAuth = WalletAuth();
-  late List<Wallet>? _userWallet = [];
+  late List<Wallet> _userWallet = [];
 
   late PageController _pageController;
   // var for current page index i.e the wallet on home
@@ -37,12 +37,14 @@ class _WalletsState extends State<Wallets> {
     );
 
     // futureWallet = walletAuth.getWallets();
-    _getData();
+    if (_userWallet.isEmpty) {
+      _getData();
+    }
   }
 
   void _getData() async {
     // _userWallet = (await WalletAuth().getWallets())?.toList();
-    _userWallet = (await WalletAuth().getWallets())!;
+    _userWallet = (await WalletAuth().getWallets());
     Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {}));
   }
 
@@ -266,17 +268,21 @@ class _WalletsState extends State<Wallets> {
                       height: 100,
                       child: Align(
                         alignment: Alignment.center,
-                        child: _userWallet == null || _userWallet!.isEmpty
+                        child: _userWallet.isEmpty
                             ? const Center(
-                                child: CircularProgressIndicator(),
+                                child: CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                ),
                               )
                             : PageView.builder(
                                 pageSnapping: true,
                                 scrollDirection: Axis.horizontal,
                                 controller: _pageController,
                                 physics: const BouncingScrollPhysics(),
-                                itemCount: _userWallet!.length,
+                                itemCount: _userWallet.length,
                                 onPageChanged: (page) {
+                                  print(_userWallet[page].currency);
                                   setState(() {
                                     currentWallet = page;
                                   });
@@ -293,7 +299,7 @@ class _WalletsState extends State<Wallets> {
                                     },
                                     child: WalletsItem(
                                       balance:
-                                          "${_userWallet![index].balance.toString()} ${_userWallet![index].currency}",
+                                          "${_userWallet[index].balance.toString()} ${_userWallet[index].currency}",
                                     ),
                                   );
                                 },
@@ -326,7 +332,7 @@ class _WalletsState extends State<Wallets> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(
-                          _userWallet!.length,
+                          _userWallet.length,
                           (index) => Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             child: buildDot(index, context),
@@ -388,7 +394,15 @@ class _WalletsState extends State<Wallets> {
                                 //     );
                                 //   },
                                 // )
-                                Get.toNamed(routes.chooseFundMethod)
+                                Get.toNamed(
+                                  routes.chooseFundMethod,
+                                  arguments: {
+              "greeting": "Hello",
+              "name": "World",
+            },
+                                  
+                                  //  _userWallet[currentWallet],
+                                )
                               },
                             ),
                           ),
