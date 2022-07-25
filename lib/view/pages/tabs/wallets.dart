@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:xendly_mobile/controller/core/wallet_auth.dart';
 import 'package:xendly_mobile/model/wallet_model.dart';
 import 'package:xendly_mobile/view/shared/widgets/buttons/rounded.dart';
@@ -20,10 +21,12 @@ class Wallets extends StatefulWidget {
 
 class _WalletsState extends State<Wallets> {
   // === WALLETS API ===//
-  late Future<List<Wallet>> walletsList;
-  final walletAuth = WalletAuth();
+  // late Future<List<Wallet>> futureWallet;
+  // final walletAuth = WalletAuth();
+  late List<Wallet>? _userWallet = [];
 
   late PageController _pageController;
+  // var for current page index i.e the wallet on home
   int currentWallet = 0;
   @override
   void initState() {
@@ -33,7 +36,14 @@ class _WalletsState extends State<Wallets> {
       initialPage: 0,
     );
 
-    walletsList = walletAuth.getWallets();
+    // futureWallet = walletAuth.getWallets();
+    _getData();
+  }
+
+  void _getData() async {
+    // _userWallet = (await WalletAuth().getWallets())?.toList();
+    _userWallet = (await WalletAuth().getWallets())!;
+    Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {}));
   }
 
   @override
@@ -44,29 +54,63 @@ class _WalletsState extends State<Wallets> {
   @override
   Widget build(BuildContext context) {
     List<Widget> walletsItems = [
-      FutureBuilder<List<Wallet>>(
-        future: walletsList,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GestureDetector(
-              onTap: () => {
-                Navigator.pushNamed(
-                  context,
-                  routes.walletDetails,
-                )
-              },
-              child: WalletsItem(
-                balance:
-                    "${snapshot.data![currentWallet].balance} ${snapshot.data![currentWallet].currency}",
-                currency: "Nigerian Naira",
-              ),
-            );
-          }
-          return const Center(
-            child: CupertinoActivityIndicator(),
-          );
+      // _userWallet == null || _userWallet!.isEmpty
+      //     ? const Center(
+      //         child: CircularProgressIndicator(),
+      //       )
+      //     : SizedBox(
+      //         height: 100,
+      //         child: ListView.builder(
+      //             itemCount: _userWallet!.length,
+      //             itemBuilder: (context, index) {
+      //               return Text(_userWallet![index].balance.toString());
+      //             }),
+      //       ),
+
+      GestureDetector(
+        onTap: () => {
+          Navigator.pushNamed(
+            context,
+            routes.walletDetails,
+          )
         },
+        child: const WalletsItem(
+          balance: "\$860,654.32",
+          currency: "United States Dollar",
+        ),
       ),
+
+      // FutureBuilder<List<Wallet>>(
+      //   future: walletsList,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.hasData) {
+      //       // snapshot.data?.map((wallet) {
+      //       return GestureDetector(
+      //         onTap: () => {
+      //           Navigator.pushNamed(
+      //             context,
+      //             routes.walletDetails,
+      //           )
+      //         },
+      //         // using map causes the section to load infinitely
+      //         // child: WalletsItem(
+      //         //   balance: "${wallet.balance} ${wallet.currency}",
+      //         //   // currency: "Nigerian Naira",
+      //         // ),
+      //         child: WalletsItem(
+      //           balance:
+      //               // snapshot accepts index but I'm unable to make it dynamic
+      //               "${snapshot.data![currentWallet].balance} ${snapshot.data![currentWallet].currency}",
+      //           currency: "Nigerian Naira",
+      //         ),
+      //       );
+      //       // });
+      //     }
+      //     return const Center(
+      //       child: CupertinoActivityIndicator(),
+      //     );
+      //   },
+      // ),
       // GestureDetector(
       //   onTap: () => {
       //     Navigator.pushNamed(
@@ -74,7 +118,7 @@ class _WalletsState extends State<Wallets> {
       //       routes.walletDetails,
       //     )
       //   },
-      //   child: WalletsItem(
+      //   child: const WalletsItem(
       //     balance: "\$860,654.32",
       //     currency: "United States Dollar",
       //   ),
@@ -87,7 +131,7 @@ class _WalletsState extends State<Wallets> {
       //   balance: "£120,481.40",
       //   currency: "Great Britain Pound",
       // ),
-      // === CREATE A WALLET ===
+      // === CREATE A WALLET === //
       // GestureDetector(
       //   onTap: () => {
       //     showDialog(
@@ -203,11 +247,17 @@ class _WalletsState extends State<Wallets> {
                                   ),
                         ),
                         suffix: [
-                          SvgPicture.asset(
-                            "assets/icons/notification.svg",
-                            width: 24,
-                            height: 24,
-                            color: XMColors.light,
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              routes.notifications,
+                            ),
+                            child: SvgPicture.asset(
+                              "assets/icons/notification.svg",
+                              width: 24,
+                              height: 24,
+                              color: XMColors.light,
+                            ),
                           ),
                         ],
                       ),
@@ -216,48 +266,129 @@ class _WalletsState extends State<Wallets> {
                       height: 100,
                       child: Align(
                         alignment: Alignment.center,
-                        child: PageView.builder(
-                          itemCount: walletsItems.length,
-                          pageSnapping: true,
-                          scrollDirection: Axis.horizontal,
-                          controller: _pageController,
-                          physics: const BouncingScrollPhysics(),
-                          onPageChanged: (page) {
-                            setState(() {
-                              currentWallet = page;
-                            });
-                          },
-                          itemBuilder: (context, index) {
-                            bool active = index == currentWallet;
-                            return walletSlider(walletsItems, index, active);
-                          },
+                        child: _userWallet == null || _userWallet!.isEmpty
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : PageView.builder(
+                                pageSnapping: true,
+                                scrollDirection: Axis.horizontal,
+                                controller: _pageController,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: _userWallet!.length,
+                                onPageChanged: (page) {
+                                  setState(() {
+                                    currentWallet = page;
+                                  });
+                                },
+                                itemBuilder: (context, index) {
+                                  // return Text(
+                                  //     _userWallet![index].balance.toString());
+                                  return GestureDetector(
+                                    onTap: () => {
+                                      Navigator.pushNamed(
+                                        context,
+                                        routes.walletDetails,
+                                      )
+                                    },
+                                    child: WalletsItem(
+                                      balance:
+                                          "${_userWallet![index].balance.toString()} ${_userWallet![index].currency}",
+                                    ),
+                                  );
+                                },
+                              ),
+                        // child: PageView.builder(
+                        //   itemCount: walletsItems.length,
+                        //   pageSnapping: true,
+                        //   scrollDirection: Axis.horizontal,
+                        //   controller: _pageController,
+                        //   physics: const BouncingScrollPhysics(),
+                        //   onPageChanged: (page) {
+                        //     setState(() {
+                        //       currentWallet = page;
+                        //     });
+                        //   },
+                        //   itemBuilder: (context, index) {
+                        //     bool active = index == currentWallet;
+                        //     return walletSlider(
+                        //       walletsItems,
+                        //       index,
+                        //       active,
+                        //     );
+                        //   },
+                        // ),
+                      ),
+                    ),
+                    // buildDot(3, context),
+                    // const SizedBox(height: 34),
+                    SizedBox(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(
+                          _userWallet!.length,
+                          (index) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 5),
+                            child: buildDot(index, context),
+                          ),
                         ),
                       ),
                     ),
-                    // const SizedBox(height: 34),
-                    // SizedBox(
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: List.generate(
-                    //       walletsItems.length,
-                    //       (index) => Padding(
-                    //         padding: const EdgeInsets.symmetric(horizontal: 5),
-                    //         child: buildDot(index, context),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 54, 16, 34),
                       child: Row(
                         children: [
                           Expanded(
                             child: RoundedButton(
-                              text: "Add Money",
+                              text: "Add Cash",
                               action: () => {
-                                Get.offNamed(
-                                  routes.addMoney,
-                                ),
+                                // showMaterialModalBottomSheet(
+                                //   context: context,
+                                //   builder: (BuildContext context) {
+                                //     return Wrap(
+                                //       crossAxisAlignment:
+                                //           WrapCrossAlignment.center,
+                                //       alignment: WrapAlignment.center,
+                                //       children: [
+                                //         Container(
+                                //           padding: const EdgeInsets.symmetric(
+                                //             horizontal: 20,
+                                //             vertical: 38,
+                                //           ),
+                                //           child: Column(
+                                //             children: [
+                                //               Text(
+                                //                 "Fund Your Wallet",
+                                //                 textAlign: TextAlign.center,
+                                //                 style: Theme.of(context)
+                                //                     .textTheme
+                                //                     .subtitle1!
+                                //                     .copyWith(
+                                //                       fontWeight:
+                                //                           FontWeight.w600,
+                                //                     ),
+                                //               ),
+                                //               const SizedBox(height: 12),
+                                //               Text(
+                                //                 "You can fund your wallet using either your Bank Card or a Virtual Account (NGN Only)",
+                                //                 textAlign: TextAlign.center,
+                                //                 style: Theme.of(context)
+                                //                     .textTheme
+                                //                     .bodyText1!
+                                //                     .copyWith(
+                                //                       color: XMColors.gray,
+                                //                     ),
+                                //               ),
+                                //               const SizedBox(height: 26),
+
+                                //             ],
+                                //           ),
+                                //         ),
+                                //       ],
+                                //     );
+                                //   },
+                                // )
+                                Get.toNamed(routes.chooseFundMethod)
                               },
                             ),
                           ),
@@ -265,7 +396,18 @@ class _WalletsState extends State<Wallets> {
                           Expanded(
                             child: RoundedButton(
                               text: "Exchange",
-                              action: () => {},
+                              action: () => Navigator.pushNamed(
+                                  context, routes.exchangeCash),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: RoundedButton(
+                              text: "Withdraw",
+                              action: () => Navigator.pushNamed(
+                                context,
+                                routes.withdraw,
+                              ),
                             ),
                           ),
                         ],
@@ -350,20 +492,20 @@ class _WalletsState extends State<Wallets> {
     );
   }
 
-  // Container buildDot(int index, BuildContext context) {
-  //   return Container(
-  //     height: 8,
-  //     width: currentWallet == index ? 28 : 8,
-  //     decoration: currentWallet == index
-  //         ? (BoxDecoration(
-  //             borderRadius: BorderRadius.circular(20),
-  //             color: XMColors.light,
-  //           ))
-  //         : (BoxDecoration(
-  //             borderRadius: BorderRadius.circular(20),
-  //             border: Border.all(color: XMColors.light),
-  //             color: XMColors.light,
-  //           )),
-  //   );
-  // }
+  Container buildDot(int index, BuildContext context) {
+    return Container(
+      height: 8,
+      width: currentWallet == index ? 28 : 8,
+      decoration: currentWallet == index
+          ? (BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: XMColors.light,
+            ))
+          : (BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: XMColors.light),
+              color: XMColors.light,
+            )),
+    );
+  }
 }

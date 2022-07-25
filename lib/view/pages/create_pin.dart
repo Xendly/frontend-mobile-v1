@@ -32,7 +32,9 @@ class _CreatePINState extends State<CreatePIN> {
     super.initState();
     pinController;
 
-    if (Get.arguments['data']['has_pincode'] == true) {
+    printInfo(info: "Pincode bool from Login => ${Get.arguments}");
+
+    if (Get.arguments) {
       Future.microtask(() => Get.toNamed(routes.home));
     } else {
       Future.microtask(() => Get.toNamed(routes.createPIN));
@@ -121,7 +123,7 @@ class _CreatePINState extends State<CreatePIN> {
       }
     }
 
-    if (Get.arguments['data']['has_pincode'] == false) {
+    if (Get.arguments != true) {
       return Scaffold(
         extendBody: true,
         backgroundColor: XMColors.light,
@@ -210,7 +212,7 @@ class _CreatePINState extends State<CreatePIN> {
           child: Text("You already have a PIN"),
         ),
       );
-      // return 
+      // return
     }
   }
 }

@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:http/http.dart' as http;
+import 'package:xendly_mobile/controller/core/token_storage.dart';
 import 'package:xendly_mobile/model/country_model.dart';
+import 'package:xendly_mobile/model/virtual_account.dart';
 import 'package:xendly_mobile/model/wallet_model.dart';
 
 class PublicAuth {
@@ -21,6 +23,55 @@ class PublicAuth {
       final List responseData = jsonDecode(response.body)['data'];
       return responseData
           .map(((country) => CountryModel.fromJson(country)))
+          .toList();
+    } else {
+      throw Exception(response.reasonPhrase);
+    }
+  }
+
+  // === FETCH VIRTUAL ACCOUNT === //
+  // Future<VirtualAccount> getVirtualAccount() async {
+  //   final token = TokenStorage().readToken();
+
+  //   http.Response response = await http.get(
+  //     Uri.parse(
+  //       'https://xendly-api.herokuapp.com/api/users/profile',
+  //     ),
+  //     headers: {
+  //       'Content-Type': 'application/json; charset=UTF-8',
+  //       'Accept': 'application/json',
+  //       'Authorization': 'Bearer $token',
+  //     },
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final responseData =
+  //         jsonDecode(response.body)['data']['virtual_accounts'];
+  //     return VirtualAccount.fromJson(responseData);
+  //   } else {
+  //     throw Exception(response.reasonPhrase);
+  //   }
+  // }
+
+  Future<List<VirtualAccount>?> getVirtualAccount() async {
+    final token = TokenStorage().readToken();
+
+    http.Response response = await http.get(
+      Uri.parse(
+        "https://xendly-api.herokuapp.com/api/users/profile",
+      ),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+        'Authorization': "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List responseData =
+          jsonDecode(response.body)['data']["virtual_accounts"];
+      return responseData
+          .map(((virtualAccount) => VirtualAccount.fromJson(virtualAccount)))
           .toList();
     } else {
       throw Exception(response.reasonPhrase);

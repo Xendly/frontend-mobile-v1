@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterwave_standard/core/flutterwave.dart';
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:get/get.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:xendly_mobile/controller/core/public_auth.dart';
 import 'package:xendly_mobile/controller/core/user_auth.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
@@ -15,7 +16,11 @@ class AddMoney extends StatefulWidget {
 }
 
 class _AddMoneyState extends State<AddMoney> {
-  final String currency = "NGN";
+  String currency = 0.toString();
+  bool? curVal = false;
+
+  // final String currency = "NGN";
+
   GlobalKey<FormState> formKey =
       GlobalKey<FormState>(debugLabel: "_addMoneyKey");
 
@@ -28,7 +33,14 @@ class _AddMoneyState extends State<AddMoney> {
   void onInit() {
     super.initState();
     amount;
+    currency;
   }
+
+  // setSelectedRadio(int val) {
+  //   setState(() {
+  //     selectedRadio = val;
+  //   });
+  // }
 
   String? validateAmount(String value) {
     if (GetUtils.isNullOrBlank(value)!) {
@@ -94,23 +106,164 @@ class _AddMoneyState extends State<AddMoney> {
               ),
               const SizedBox(height: 6),
               Text(
-                "\$120.62",
+                "120.62 USD",
                 style: Theme.of(context).textTheme.headline2!.copyWith(
                       color: XMColors.primary_20,
                     ),
               ),
               const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  color: XMColors.gray_70,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: const EdgeInsets.fromLTRB(15, 9, 13, 5),
-                child: Text(
-                  "USD",
-                  style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+              GestureDetector(
+                onTap: () => {
+                  showMaterialModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        alignment: WrapAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 38,
+                            ),
+                            color: XMColors.light,
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Choose a Currency",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1!
+                                      .copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "NGN and USD are supported for now",
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1!
+                                      .copyWith(
+                                        color: XMColors.gray,
+                                      ),
+                                ),
+                                const SizedBox(height: 24),
+                                // checkboxlist
+                                RadioListTile(
+                                  value: currency,
+                                  groupValue: currency,
+                                  onChanged: (currency) {
+                                    setState(() {
+                                      this.currency = "USD";
+                                    });
+                                  },
+                                  activeColor: XMColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  selectedTileColor: XMColors.primary,
+                                  dense: true,
+                                  //font change
+                                  title: Text(
+                                    "United States Dollars (USD)",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      "1.00 USD = NGN 1.00",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: XMColors.gray_50,
+                                          ),
+                                    ),
+                                  ),
+                                  // value: true,
+                                  secondary: const CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(
+                                      "https://upload.wikimedia.org/wikipedia/en/thumb/a/a4/Flag_of_the_United_States.svg/2560px-Flag_of_the_United_States.svg.png",
+                                    ),
+                                  ),
+                                  // onChanged: (value) {},
+                                ),
+                                const SizedBox(height: 6),
+                                RadioListTile(
+                                  value: currency,
+                                  groupValue: currency,
+                                  onChanged: (currency) {
+                                    setState(() {
+                                      this.currency = "NGN";
+                                    });
+                                  },
+                                  activeColor: XMColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  selectedTileColor: XMColors.primary,
+                                  dense: true,
+                                  //font change
+                                  title: Text(
+                                    "Canadian Dollar (CAD)",
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      "1.00 CAD = NGN 1.00",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyText2!
+                                          .copyWith(
+                                            fontWeight: FontWeight.w500,
+                                            color: XMColors.gray_50,
+                                          ),
+                                    ),
+                                  ),
+                                  secondary: const CircleAvatar(
+                                    radius: 20,
+                                    backgroundImage: NetworkImage(
+                                      "https://www.worldatlas.com/img/flag/ca-flag.jpg",
+                                    ),
+                                  ),
+                                  // onChanged: (value) {},
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: XMColors.gray_70,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(15, 10, 13, 6),
+                  child: Text(
+                    "Canadian Dollars",
+                    style: Theme.of(context).textTheme.bodyText1!.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
                 ),
               ),
               const SizedBox(height: 38),
