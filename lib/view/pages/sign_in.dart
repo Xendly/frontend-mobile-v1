@@ -110,12 +110,15 @@ class _SignInState extends State<SignIn> {
           );
 
           printInfo(info: "Logged User Data >>> ${result['data']} <<<");
+          bool? hasPincode = result["data"]["has_pincode"];
+          printInfo(info: "Pincode $hasPincode");
 
           return Get.to(
             const CreatePIN(),
-            arguments: {
-              "data": result["data"],
-            },
+            arguments: hasPincode,
+            //   arguments: {
+            //     "has_pincode": hasPincode,
+            //   },
           );
         } else {
           printInfo(info: "${result["message"]}");

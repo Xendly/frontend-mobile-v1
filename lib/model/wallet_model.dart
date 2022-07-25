@@ -19,15 +19,18 @@ class Wallet {
     this.primary,
   });
 
-  Wallet.fromJson(Map<String, dynamic> walletData)
-      : id = walletData['id'],
-        userId = walletData['userId'],
-        balance = walletData['balance'],
-        currency = walletData['currency'],
-        active = walletData['active'],
-        createdAt = walletData['createdAt'],
-        updatedAt = walletData['updatedAt'],
-        primary = walletData['primary'];
+  factory Wallet.fromJson(Map<String, dynamic> json) {
+    return Wallet(
+      id: json['id'],
+      userId: json['user_id'],
+      balance: json['balance'],
+      currency: json['currency'],
+      active: json['active'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
+      primary: json['primary'],
+    );
+  }
 }
 
 class FundWallet {

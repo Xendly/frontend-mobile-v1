@@ -43,6 +43,8 @@ dependencies:
   modal_bottom_sheet: ^2.0.1
   draggable_bottom_sheet: ^0.1.2
   flutterwave_standard: ^1.0.4
+  animated_custom_dropdown: ^1.2.2
+  dropdown_below: ^1.0.3
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:xendly_mobile/controller/core/wallet_auth.dart';
 import 'package:xendly_mobile/model/wallet_model.dart';
+import 'package:xendly_mobile/view/pages/tabs/my_profile.dart';
 import '../pages/tabs/profile.dart';
 import '../pages/tabs/transfer.dart';
 import '../pages/tabs/wallets.dart';
@@ -18,7 +19,7 @@ class _HomeState extends State<Home> {
   final tabPages = [
     const Wallets(),
     const Transfer(),
-    const Profile(),
+    const MyProfile(),
   ];
 
   @override
