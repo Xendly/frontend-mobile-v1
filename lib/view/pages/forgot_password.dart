@@ -1,11 +1,14 @@
+// === DEFAULT IMPORTS === //
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:xendly_mobile/controller/core/user_auth.dart';
-import 'package:xendly_mobile/controller/forgotpwd_controller.dart';
-import 'package:xendly_mobile/view/shared/colors.dart';
-import 'package:xendly_mobile/view/shared/widgets.dart';
-import 'package:xendly_mobile/view/shared/widgets/solid_button.dart';
-import 'package:xendly_mobile/view/shared/widgets/text_input.dart';
+
+// === CUSTOM IMPORTS === //
+import '../../controller/core/user_auth.dart';
+import '../../view/pages/reset_password.dart';
+import '../../view/shared/colors.dart';
+import '../../view/shared/widgets.dart';
+import '../../view/shared/widgets/solid_button.dart';
+import '../../view/shared/widgets/text_input.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
@@ -14,7 +17,91 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  var forgotPwdController = Get.put(ForgotPwdController());
+  // === CONTROLLER === //
+  final _userAuth = Get.put(UserAuth());
+  GlobalKey<FormState> formKey =
+      GlobalKey<FormState>(debugLabel: "_forgotPasswordKey");
+
+  TextEditingController? emailController = TextEditingController();
+
+  Map<String, dynamic> data = {
+    "email": "",
+  };
+
+  void onInit() {
+    super.initState();
+    emailController;
+  }
+
+  String? validateEmail(String value) {
+    if (GetUtils.isNullOrBlank(value)!) {
+      return "Provide an Email Address";
+    } else if (!GetUtils.isEmail(value)) {
+      return "Provide a valid Email Address";
+    } else {
+      return null;
+    }
+  }
+
+  void checkForgotPwdValidation() async {
+    final isValid = formKey.currentState!.validate();
+    if (!isValid) {
+      printInfo(info: "some fields are invalid");
+    } else {
+      printInfo(info: "all fields are valid");
+      formKey.currentState!.save();
+      try {
+        final result = await _userAuth.forgotPassword(data);
+        if (result["statusCode"] == 200) {
+          printInfo(info: "${result["message"]}, ${result["status"]}");
+          Get.snackbar(
+            result["status"],
+            result["message"],
+            backgroundColor: Colors.green,
+            colorText: XMColors.light,
+            duration: const Duration(seconds: 5),
+          );
+          return Get.to(
+            () => const ResetPassword(),
+            transition: Transition.rightToLeft,
+            arguments: {
+              "email": data["email"],
+            },
+          );
+        } else {
+          printInfo(info: "${result["message"]}, ${result["statusCode"]}");
+          if (result["message"] != null || result["status"] != "failed") {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          } else {
+            Get.closeAllSnackbars();
+            Get.snackbar(
+              result["status"].toString(),
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+            Get.snackbar(
+              result["status"],
+              result["message"],
+              backgroundColor: Colors.red,
+              colorText: XMColors.light,
+              duration: const Duration(seconds: 5),
+            );
+          }
+        }
+      } catch (error) {
+        printInfo(info: error.toString());
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +137,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 const SizedBox(height: 26),
                 Form(
-                  key: forgotPwdController.formKey,
+                  key: formKey,
                   child: Column(
                     children: [
                       TextInput(
@@ -59,11 +146,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         hintText: "johnpsmith@gmail.com",
                         inputType: TextInputType.emailAddress,
                         borderRadius: BorderRadius.circular(10),
-                        controller: forgotPwdController.emailController,
-                        onSaved: (value) =>
-                            forgotPwdController.data["email"] = value!,
+                        controller: emailController,
+                        onSaved: (value) => data["email"] = value!,
                         validator: (value) {
-                          return forgotPwdController.validateEmail(value!);
+                          return validateEmail(value!);
                         },
                       ),
                       const SizedBox(height: 25),
@@ -72,7 +158,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         textColor: XMColors.light,
                         buttonColor: XMColors.primary,
                         action: () {
-                          forgotPwdController.checkForgotPwdValidation();
+                          checkForgotPwdValidation();
                         },
                       ),
                       const SizedBox(height: 25),

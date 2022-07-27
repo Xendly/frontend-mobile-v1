@@ -9,6 +9,7 @@ class TextInput extends StatelessWidget {
   late String? initialValue = "US";
   late Widget? suffixIcon, prefixIcon;
   late BorderRadius borderRadius;
+  final int? maxlength;
   late TextEditingController? controller;
   late Function(String?)? onSaved;
   late String? Function(String?)? validator;
@@ -18,6 +19,7 @@ class TextInput extends StatelessWidget {
     Key? key,
     this.inputType,
     this.label,
+    this.maxlength,
     this.hintText,
     this.initialValue,
     this.suffixIcon,
@@ -44,6 +46,8 @@ class TextInput extends StatelessWidget {
           onSaved: onSaved,
           validator: validator,
           controller: controller,
+          maxLength: maxlength,
+          
           autofocus: false,
           style: const TextStyle(
             color: XMColors.primary,
@@ -51,6 +55,7 @@ class TextInput extends StatelessWidget {
           ),
           keyboardType: inputType,
           decoration: InputDecoration(
+            // counterStyle: ,
             prefix: const Padding(
               padding: EdgeInsets.only(
                 left: 20.0,
@@ -59,18 +64,18 @@ class TextInput extends StatelessWidget {
             errorStyle: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
-              color: XMColors.danger,
+              color: XMColors.red,
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: XMColors.danger,
+                color: XMColors.red,
                 width: 1.3,
               ),
               borderRadius: borderRadius,
             ),
             errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: XMColors.danger,
+                color: XMColors.red,
                 width: 1.3,
               ),
               borderRadius: borderRadius,

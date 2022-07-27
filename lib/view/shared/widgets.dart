@@ -2,6 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutterwave_standard/core/flutterwave.dart';
+import 'package:flutterwave_standard/flutterwave.dart';
+import 'package:get/get.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
 
 Widget walletCard(BuildContext context) {
@@ -104,6 +107,7 @@ Text heading(
   );
 }
 
+// === TYPOGRAPHY === //
 Text body(
   String text, [
   Color? color = XMColors.dark,
@@ -287,7 +291,7 @@ Widget listItem() {
     ),
     trailing: strongBody(
       "-\$140.50",
-      XMColors.danger,
+      XMColors.red,
       FontWeight.w700,
     ),
   );
@@ -304,7 +308,8 @@ Widget divider() {
 Widget pageLabel(String? text, BuildContext context) {
   return GestureDetector(
     onTap: () => {
-      Navigator.pop(context),
+      // Navigator.pop(context),
+      Get.back(),
     },
     child: Row(
       children: [
@@ -354,19 +359,54 @@ Widget richText(
   );
 }
 
-// Widget? circleAvatar(
-//   ImageProvider<Object>? backgroundImage, [
-//   EdgeInsetsGeometry? padding,
-//   double radius = 22,
-// ]) {
-//   return Container(
-//     padding: padding,
-//     decoration: BoxDecoration(
-//       borderRadius: BorderRadius.circular(50),
+// === FLUTTERWAVE INSTANCE === //
+// void handlePaymentInitialization(
+//   BuildContext context,
+//   String name,
+//   String phone,
+//   String email,
+//   String amount,
+// ) async {
+//   final style = FlutterwaveStyle(
+//     appBarText: "My Standard Blue",
+//     buttonColor: const Color(0xffd0ebff),
+//     appBarIcon: const Icon(
+//       Icons.message,
+//       color: Color(0xffd0ebff),
 //     ),
-//     child: CircleAvatar(
-//       backgroundImage: backgroundImage,
-//       radius: radius,
+//     buttonTextStyle: const TextStyle(
+//       color: Colors.black,
+//       fontWeight: FontWeight.bold,
+//       fontSize: 18,
 //     ),
+//     appBarColor: const Color(0xffd0ebff),
+//     dialogCancelTextStyle: const TextStyle(
+//       color: Colors.redAccent,
+//       fontSize: 18,
+//     ),
+//     dialogContinueTextStyle: const TextStyle(
+//       color: Colors.blue,
+//       fontSize: 18,
+//     ),
+//   );
+
+//   final Customer customer = Customer(
+//     name: name,
+//     phoneNumber: phone,
+//     email: email,
+//   );
+
+//   final Flutterwave flutterwave = Flutterwave(
+//     isTestMode: false,
+//     context: context,
+//     style: style,
+//     publicKey: "FLWPUBK_TEST-9da57004452405fe95c857f569eac55f-X",
+//     currency: "NGN",
+//     redirectUrl: "my_redirect_url",
+//     txRef: "unique_transaction_reference",
+//     amount: amount,
+//     customer: customer,
+//     paymentOptions: "card",
+//     customization: Customization(title: "Xendly Test Payment"),
 //   );
 // }
