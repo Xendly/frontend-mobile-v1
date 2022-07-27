@@ -24,14 +24,14 @@ class _ChooseFundMethodState extends State<ChooseFundMethod> {
   // late Future<VirtualAccount> virtualAccount;
   // final publicAuth = PublicAuth();
   // late int currentUser;
-  List<VirtualAccount>? _userVAccount = [];
+  List<VirtualAccount> _userVAccount = [];
 
-  Wallet? _wallet;
+  late Wallet _wallet;
 
   @override
   void initState() {
     super.initState();
-    // _wallet = Get.arguments;
+    _wallet = Get.arguments as Wallet;
 
     print(Get.arguments);
     // virtualAccount = publicAuth.getVirtualAccount();
@@ -80,7 +80,7 @@ class _ChooseFundMethodState extends State<ChooseFundMethod> {
 
               InkWell(
                 onTap: () => {
-                  Get.toNamed(routes.addMoney),
+                  Get.toNamed(routes.addMoney, arguments: _wallet),
                 },
                 child: Row(
                   children: [
@@ -124,207 +124,219 @@ class _ChooseFundMethodState extends State<ChooseFundMethod> {
                 ),
               ),
               const SizedBox(height: 26),
-              InkWell(
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: XMColors.gray_70,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: SvgPicture.asset(
-                        "assets/icons/bank.svg",
-                        width: 24,
-                        height: 24,
-                        color: XMColors.dark,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Fund with Virtual Account",
-                          style:
-                              Theme.of(context).textTheme.bodyText1!.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: XMColors.dark,
-                                  ),
+              if (_wallet.currency == 'NGN')
+                InkWell(
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: XMColors.gray_70,
+                          borderRadius: BorderRadius.circular(50),
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          "Available only for NGN",
-                          style:
-                              Theme.of(context).textTheme.bodyText2!.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                    color: XMColors.gray_50,
-                                  ),
+                        child: SvgPicture.asset(
+                          "assets/icons/bank.svg",
+                          width: 24,
+                          height: 24,
+                          color: XMColors.dark,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
-                onTap: () => {
-                  showMaterialModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        alignment: WrapAlignment.center,
+                      ),
+                      const SizedBox(width: 20),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 38,
-                            ),
-                            child: Column(
-                              children: [
-                                Text(
-                                  "NGN Virtual Account Details",
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1!
-                                      .copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  "Here is your virtual account information to easily fund your NGN wallet",
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText1!
-                                      .copyWith(
-                                        color: XMColors.gray,
-                                      ),
-                                ),
-                                const SizedBox(height: 26),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Account Number",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: XMColors.dark,
-                                          ),
+                          Text(
+                            "Fund with Virtual Account",
+                            style:
+                                Theme.of(context).textTheme.bodyText1!.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: XMColors.dark,
                                     ),
-                                    Text(
-                                      _userVAccount![0].accountNumber!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w500,
-                                            color: XMColors.gray,
-                                          ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            "Available only for NGN",
+                            style:
+                                Theme.of(context).textTheme.bodyText2!.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                      color: XMColors.gray_50,
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Account Name",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: XMColors.dark,
-                                          ),
-                                    ),
-                                    Text(
-                                      _userVAccount![0].accountName!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w500,
-                                            color: XMColors.gray,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Bank Name",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: XMColors.dark,
-                                          ),
-                                    ),
-                                    Text(
-                                      _userVAccount![0].bankName!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w500,
-                                            color: XMColors.gray,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 20),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      "Currency",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: XMColors.dark,
-                                          ),
-                                    ),
-                                    Text(
-                                      _userVAccount![0].currency!,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1!
-                                          .copyWith(
-                                            fontWeight: FontWeight.w500,
-                                            color: XMColors.gray,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 30),
-                                RoundedButton(
-                                  text: "Cancel",
-                                  action: () => {
-                                    Get.back(),
-                                  },
-                                ),
-                              ],
-                            ),
                           ),
                         ],
-                      );
-                    },
+                      ),
+                    ],
                   ),
-                },
-              ),
+                  onTap: () => {
+                    showMaterialModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          alignment: WrapAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 38,
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "NGN Virtual Account Details",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle1!
+                                        .copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    _userVAccount.isEmpty
+                                        ? 'Create an account to fund your wallet'
+                                        : "Here is your virtual account information to easily fund your NGN wallet",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1!
+                                        .copyWith(
+                                          color: XMColors.gray,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 26),
+                                  if (_userVAccount.isNotEmpty) ...[
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Account Number",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: XMColors.dark,
+                                              ),
+                                        ),
+                                        Text(
+                                          _userVAccount[0].accountNumber!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: XMColors.gray,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Account Name",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: XMColors.dark,
+                                              ),
+                                        ),
+                                        Text(
+                                          _userVAccount[0].accountName!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: XMColors.gray,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Bank Name",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: XMColors.dark,
+                                              ),
+                                        ),
+                                        Text(
+                                          _userVAccount[0].bankName!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: XMColors.gray,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Currency",
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: XMColors.dark,
+                                              ),
+                                        ),
+                                        Text(
+                                          _userVAccount[0].currency!,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1!
+                                              .copyWith(
+                                                fontWeight: FontWeight.w500,
+                                                color: XMColors.gray,
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 30),
+                                    RoundedButton(
+                                      text: "Cancel",
+                                      action: () => {
+                                        Get.back(),
+                                      },
+                                    ),
+                                  ] else
+                                    RoundedButton(
+                                      text: 'Create virtual account',
+                                      action: () {
+                                        Get.back(closeOverlays: true);
+                                        Get.toNamed(routes.virtualAccounts);
+                                      },
+                                    )
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  },
+                ),
               // GestureDetector(
               //   child: Container(
               //     color: XMColors.gray_90,

@@ -45,6 +45,8 @@ dependencies:
   flutterwave_standard: ^1.0.4
   animated_custom_dropdown: ^1.2.2
   dropdown_below: ^1.0.3
+  flutterwave_payment: ^0.0.4+2
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:

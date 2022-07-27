@@ -29,158 +29,151 @@ import 'package:xendly_mobile/view/pages/wallet_details.dart';
 import 'package:xendly_mobile/view/pages/withdraw.dart';
 
 // === onboarding & authentication === //
-const String splash = "splash";
-const String onboarding = "onboarding";
-const String home = "home";
-const String signUp = "signUp";
-const String signIn = "signIn";
-const String checkPin = "checkPin";
-const String withdraw = "withdraw";
-const String forgotPassword = "forgotPassword";
-const String resetPassword = "resetPassword";
-const String virtualAccounts = "virtualAccounts";
-const String chooseFundMethod = "chooseFundMethod";
-const String editProfile = "editProfile";
-const String notifications = "notifications";
-const String personalSecurity = "personalSecurity";
-const String verifyEmail = "verifyEmail";
-const String createPIN = "createPIN";
-const String exchangeCash = "exchangeCash";
-const String confirmTransaction = "confirmTransaction";
-const String enterPIN = "enterPIN";
-const String transactionSuccess = "transactionSuccess";
-const String walletDetails = "walletDetails";
-const String sendMoney = "sendMoney";
-const String addMoney = "addMoney";
-const String helpAndSupport = "helpAndSupport";
-const String filesAndDocs = "filesAndDocs";
+const String splash = "/";
+const String onboarding = "/onboarding";
+const String home = "/home";
+const String signUp = "/signUp";
+const String signIn = "/signIn";
+const String checkPin = "/checkPin";
+const String withdraw = "/withdraw";
+const String forgotPassword = "/forgotPassword";
+const String resetPassword = "/resetPassword";
+const String virtualAccounts = "/virtualAccounts";
+const String chooseFundMethod = "/chooseFundMethod";
+const String editProfile = "/editProfile";
+const String notifications = "/notifications";
+const String personalSecurity = "/personalSecurity";
+const String verifyEmail = "/verifyEmail";
+const String createPIN = "/createPIN";
+const String exchangeCash = "/exchangeCash";
+const String confirmTransaction = "/confirmTransaction";
+const String enterPIN = "/enterPIN";
+const String transactionSuccess = "/transactionSuccess";
+const String walletDetails = "/walletDetails";
+const String sendMoney = "/sendMoney";
+const String addMoney = "/addMoney";
+const String helpAndSupport = "/helpAndSupport";
+const String filesAndDocs = "/filesAndDocs";
 
 List<GetPage<dynamic>> getPages = [
+  GetPage(
+    name: splash,
+    page: () => Splash(),
+  ),
+  GetPage(
+    name: onboarding,
+    page: () => const Onboarding(),
+  ),
+  GetPage(
+    name: home,
+    page: () => const Home(),
+  ),
+  GetPage(
+    name: filesAndDocs,
+    page: () => const FilesAndDocuments(),
+  ),
+  GetPage(
+    name: signUp,
+    page: () => const SignUp(),
+  ),
+  GetPage(
+    name: signIn,
+    page: () => const SignIn(),
+  ),
+  GetPage(
+    name: withdraw,
+    page: () => const Withdraw(),
+  ),
+  GetPage(
+    name: editProfile,
+    page: () => const EditProfile(),
+  ),
+  GetPage(
+    name: notifications,
+    page: () => const Notifications(),
+  ),
+  GetPage(
+    name: forgotPassword,
+    page: () => const ForgotPassword(),
+  ),
+  GetPage(
+    name: helpAndSupport,
+    page: () => const HelpAndSupport(),
+  ),
+  GetPage(
+    name: resetPassword,
+    page: () => const ResetPassword(),
+  ),
+
+  // === SECURITY === //
+
+  GetPage(
+    name: personalSecurity,
+    page: () => const PersonalSecurity(),
+  ),
+  GetPage(
+    name: sendMoney,
+    page: () => const SendMoney(),
+  ),
+  GetPage(
+    name: verifyEmail,
+    page: () => const VerifyEmail(),
+  ),
+  GetPage(
+    name: createPIN,
+    page: () => const CreatePIN(),
+  ),
+  GetPage(
+    name: exchangeCash,
+    page: () => const ExchangeCash(),
+  ),
   GetPage(
     name: chooseFundMethod,
     page: () => const ChooseFundMethod(),
   ),
- 
-       GetPage(
-        name: splash,
-        page: () => Splash(),
-      ),
+  GetPage(
+    name: confirmTransaction,
+    page: () => const ConfirmTransaction(),
+  ),
+  GetPage(
+    name: enterPIN,
+    page: () => const EnterPIN(),
+  ),
+  GetPage(
+    name: transactionSuccess,
+    page: () => const TransactionSuccess(),
+  ),
+  GetPage(
+    name: walletDetails,
+    page: () => const WalletDetails(),
+  ),
+  GetPage(
+    name: virtualAccounts,
+    page: () => const VirtualAccounts(),
+  ),
 
-    case onboarding:
-      return Getpage(
-        builder: (context) => const Onboarding(),
-      );
-    case home:
-      return Getpage(
-        builder: (context) => const Home(),
-      );
-    case filesAndDocs:
-      return Getpage(
-        builder: (context) => const FilesAndDocuments(),
-      );
-    case signUp:
-      return Getpage(
-        builder: (context) => const SignUp(),
-      );
-    case signIn:
-      return Getpage(
-        builder: (context) => const SignIn(),
-      );
-    case withdraw:
-      return Getpage(
-        builder: (context) => const Withdraw(),
-      );
-    case editProfile:
-      return Getpage(
-        builder: (context) => const EditProfile(),
-      );
-    case notifications:
-      return Getpage(
-        builder: (context) => const Notifications(),
-      );
-    case forgotPassword:
-      return Getpage(
-        builder: (context) => const ForgotPassword(),
-      );
-    case helpAndSupport:
-      return Getpage(
-        builder: (context) => const HelpAndSupport(),
-      );
-    case resetPassword:
-      return Getpage(
-        builder: (context) => const ResetPassword(),
-      );
+  // === MONEY MANAGEMENT == //
 
-    // === SECURITY === //
-    case personalSecurity:
-      return Getpage(
-        builder: (context) => const PersonalSecurity(),
-      );
-    case sendMoney:
-      return Getpage(
-        builder: (context) => const SendMoney(),
-      );
-
-    case verifyEmail:
-      return Getpage(
-        builder: (context) => const VerifyEmail(),
-      );
-    case createPIN:
-      return Getpage(
-        builder: (context) => const CreatePIN(),
-      );
-    case exchangeCash:
-      return Getpage(
-        builder: (context) => const ExchangeCash(),
-      );
-    // case chooseFundMethod:
-    //   return MaterialPageRoute(
-    //     builder: (context) => const ChooseFundMethod(),
-    //   );
-    case confirmTransaction:
-      return Getpage(
-        builder: (context) => const ConfirmTransaction(),
-      );
-    case enterPIN:
-      return Getpage(
-        builder: (context) => const EnterPIN(),
-      );
-    case transactionSuccess:
-      return Getpage(
-        builder: (context) => const TransactionSuccess(),
-      );
-    case walletDetails:
-      return Getpage(
-        builder: (context) => const WalletDetails(),
-      );
-    case virtualAccounts:
-      return Getpage(
-        builder: (context) => const VirtualAccounts(),
-      ),
-
-    // === MONEY MANAGEMENT == //
-
-    
-      return Getpage(
-        name: addMoney,
-        builder: (context) => const AddMoney(),
-      );
+  GetPage(
+    name: addMoney,
+    page: () => const AddMoney(),
+  )
   //  return MaterialPageRoute(
   //       builder: (context) =>
   //     );
   // GetPage(name:"/first/:id", page: () => First()),
 ];
 
-   String initialRoute({bool isLoggedIn = false}) {
-    final lastPage = GetStorage().read<Map<String, dynamic>?>("last_page");
-    if (lastPage != null) {
-      return lastPage['route'];
-    } else if (isLoggedIn) {
-      return home;
-    } else {
-      return splash;
-    }
+String initialRoute({bool isLoggedIn = false}) {
+  final lastPage = GetStorage().read<Map<String, dynamic>?>("last_page");
+  if (lastPage != null) {
+    return lastPage['route'];
+  } else if (isLoggedIn) {
+    return home;
+  } else {
+    return splash;
   }
+}
 
 Route<dynamic> controller(RouteSettings settings) {
   switch (settings.name) {

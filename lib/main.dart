@@ -104,8 +104,8 @@ class XendlyMobile extends StatelessWidget {
         ),
       ),
       // home: const Onboarding(),
-      // getPages: route.getPages,
-      onGenerateRoute: route.controller,
+      getPages: route.getPages,
+      // onGenerateRoute: route.controller,
       initialRoute: route.initialRoute(),
     );
   }

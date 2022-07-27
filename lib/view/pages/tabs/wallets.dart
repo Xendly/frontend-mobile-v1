@@ -396,12 +396,7 @@ class _WalletsState extends State<Wallets> {
                                 // )
                                 Get.toNamed(
                                   routes.chooseFundMethod,
-                                  arguments: {
-              "greeting": "Hello",
-              "name": "World",
-            },
-                                  
-                                  //  _userWallet[currentWallet],
+                                  arguments: _userWallet[currentWallet],
                                 )
                               },
                             ),

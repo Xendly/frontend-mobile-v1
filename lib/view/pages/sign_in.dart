@@ -24,6 +24,7 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  
   // === UNSORTED === //
   bool _obscureText = true;
   void togglePassword() {
@@ -260,6 +261,7 @@ class _SignInState extends State<SignIn> {
                       SolidButton(
                         text: "Sign In",
                         textColor: XMColors.light,
+                        isLoading: isLoading.value,
                         buttonColor: XMColors.primary,
                         action: () {
                           checkSignInValidation();

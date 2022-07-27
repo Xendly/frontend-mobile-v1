@@ -1,13 +1,23 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutterwave_payment/flutterwave_payment.dart';
 import 'package:flutterwave_standard/core/flutterwave.dart';
 import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:xendly_mobile/controller/core/public_auth.dart';
+import 'package:xendly_mobile/controller/core/transaction_service.dart';
 import 'package:xendly_mobile/controller/core/user_auth.dart';
 import 'package:xendly_mobile/view/shared/colors.dart';
+import 'package:xendly_mobile/view/shared/utils.dart';
 import 'package:xendly_mobile/view/shared/widgets/buttons/rounded.dart';
 import 'package:xendly_mobile/view/shared/widgets/page_title.dart';
+
+import '../../model/wallet_model.dart';
+import '../shared/widgets/text_input.dart';
 
 class AddMoney extends StatefulWidget {
   const AddMoney({Key? key}) : super(key: key);
@@ -18,22 +28,28 @@ class AddMoney extends StatefulWidget {
 class _AddMoneyState extends State<AddMoney> {
   String currency = 0.toString();
   bool? curVal = false;
+  late Wallet _wallet;
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
 
   // final String currency = "NGN";
 
   GlobalKey<FormState> formKey =
       GlobalKey<FormState>(debugLabel: "_addMoneyKey");
 
-  final TextEditingController amount = TextEditingController();
+  final TextEditingController amount = TextEditingController(text: '0.00');
+
+  var f = NumberFormat("###,###", "en_US");
 
   Map<String, dynamic> data = {
     "amount": "",
   };
 
-  void onInit() {
+  @override
+  void initState() {
     super.initState();
-    amount;
-    currency;
+    // currency;
+    _wallet = Get.arguments as Wallet;
   }
 
   // setSelectedRadio(int val) {
@@ -98,18 +114,104 @@ class _AddMoneyState extends State<AddMoney> {
               ),
               const SizedBox(height: 38),
               Text(
-                "Fund USD wallet",
+                "Fund ${_wallet.currency} wallet",
                 style: Theme.of(context).textTheme.bodyText1!.copyWith(
                       color: XMColors.gray,
                       fontWeight: FontWeight.w600,
                     ),
               ),
               const SizedBox(height: 6),
-              Text(
-                "120.62 USD",
-                style: Theme.of(context).textTheme.headline2!.copyWith(
-                      color: XMColors.primary_20,
-                    ),
+              GestureDetector(
+                onTap: () {
+                  showMaterialModalBottomSheet(
+                    context: context,
+                    builder: (_) {
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(
+                          16.0,
+                          16.0,
+                          16.0,
+                          MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        // // height: 50.0,
+                        // padding: const EdgeInsets.symmetric(
+                        //   horizontal: 12,
+                        //   vertical: 38,
+                        // ),
+                        color: XMColors.light,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Enter amount to fund",
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle1!
+                                        .copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                  Chip(
+                                    onDeleted: () {
+                                      Navigator.pop(context);
+                                    },
+                                    label: GestureDetector(
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('Close')),
+                                    deleteIcon: const Icon(Icons.close),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              TextInput(
+                                readOnly: false,
+                                maxlength: 7,
+                                label: "Amount",
+                                hintText: "5000",
+                                inputType: TextInputType.number,
+                                borderRadius: BorderRadius.circular(10),
+                                controller: amount,
+                                onSaved: (value) => data["bvn"] = value,
+                                // validator: (value) => validateBvn(value!),
+                              ),
+                              // TextField(
+                              //   controller: amount,
+                              //   onChanged: (v) {
+                              //     setState(() {});
+                              //   },
+                              // ),
+                              // Text(
+                              //   "NGN and USD are supported for now",
+                              //   textAlign: TextAlign.center,
+                              //   style: Theme.of(context)
+                              //       .textTheme
+                              //       .bodyText1!
+                              //       .copyWith(
+                              //         color: XMColors.gray,
+                              //       ),
+                              // ),
+                              const SizedBox(height: 24),
+                              // checkboxlist
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Text(
+                  "${amount.value.text.isNotEmpty ? f.format(int.tryParse(amount.value.text) ?? 0) : '0'} ${_wallet.currency}",
+                  style: Theme.of(context).textTheme.headline2!.copyWith(
+                        color: XMColors.primary_20,
+                      ),
+                ),
               ),
               const SizedBox(height: 16),
               GestureDetector(
@@ -259,7 +361,7 @@ class _AddMoneyState extends State<AddMoney> {
                   ),
                   padding: const EdgeInsets.fromLTRB(15, 10, 13, 6),
                   child: Text(
-                    "Canadian Dollars",
+                    getCurrency(_wallet.currency ?? 'NGXs'),
                     style: Theme.of(context).textTheme.bodyText1!.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
@@ -345,8 +447,10 @@ class _AddMoneyState extends State<AddMoney> {
               const Spacer(),
               RoundedButton(
                 text: "Continue",
+                isLoading: false,
                 action: () {
-                  fundWallet();
+                  checkFwSetup();
+                  // fundWallet();
                 },
               ),
             ],
@@ -359,6 +463,87 @@ class _AddMoneyState extends State<AddMoney> {
   final _publicAuth = Get.put(PublicAuth());
   checkFwSetup() async {
     try {
+      final transactionService = TransactionService();
+
+      String? url = await transactionService.createPaymentLink(
+        amount.value.text,
+        _wallet.currency ?? 'NGN',
+      );
+      print(url);
+      if (url != null) {
+        showModalBottomSheet(
+            context: context,
+            builder: (_) {
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.9,
+                child: WebView(
+                  initialUrl: url,
+                  javascriptMode: JavascriptMode.unrestricted,
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller.complete(webViewController);
+                  },
+                  onProgress: (int progress) {
+                    print('WebView is loading (progress : $progress%)');
+                  },
+                  // javascriptChannels: <JavascriptChannel>{
+                  //   _toasterJavascriptChannel(context),
+                  // },
+                  navigationDelegate: (NavigationRequest request) {
+                    if (request.url.contains('https://webhook.se')) {
+                      // verifyTransaction(reference);
+                      Navigator.of(context).pop(); //close webview
+                      print('success');
+                    }
+                    return NavigationDecision.navigate;
+                    // if (request.url.startsWith('https://www.youtube.com/')) {
+                    //   print('blocking navigation to $request}');
+                    //   return NavigationDecision.prevent;
+                    // }
+                    // print('allowing navigation to $request');
+                    // return NavigationDecision.navigate;
+                  },
+                  onPageStarted: (String url) {
+                    print('Page started loading: $url');
+                  },
+                  onPageFinished: (String url) {
+                    print('Page finished loading: $url');
+                  },
+                  gestureNavigationEnabled: true,
+                  backgroundColor: const Color(0x00000000),
+                ),
+              );
+            });
+      } else {}
+      // Get a reference to RavePayInitializer
+      // var initializer = RavePayInitializer(
+      //   amount: double.tryParse(amount.value.text),
+      //   publicKey: 'FLWPUBK_TEST-9da57004452405fe95c857f569eac55f-X',
+      //   encryptionKey: 'FLWSECK_TESTa381cd6deaa5',
+      // )
+      //   ..country = "NG"
+      //   ..currency = "NGN"
+      //   ..email = "customer@email.com"
+      //   ..fName = "Ciroma"
+      //   ..lName = "Adekunle"
+      //   ..narration = 'narration'
+      //   ..txRef = 'some_fake_shiiss'
+      //   // ..subAccounts = subAccounts
+      //   // ..acceptMpesaPayments = acceptMpesaPayment
+      //   ..acceptAccountPayments = false
+      //   ..acceptCardPayments = true
+      //   ..acceptAchPayments = false
+      //   ..acceptGHMobileMoneyPayments = _wallet.currency == 'GHS'
+      //   ..acceptUgMobileMoneyPayments = true
+      //   ..staging = true
+      //   ..isPreAuth = false
+      //   ..displayFee = true;
+
+      // // Initialize and get the transaction result
+      // RaveResult? response = await RavePayManager()
+      //     .prompt(context: context, initializer: initializer);
+      // print(response?.message);
+      // print(response?.status);
+      /*
       final style = FlutterwaveStyle(
         appBarText: "My Standard Blue",
         buttonColor: const Color(0xffd0ebff),
@@ -393,12 +578,13 @@ class _AddMoneyState extends State<AddMoney> {
         context: context,
         style: style,
         publicKey: "FLWPUBK_TEST-9da57004452405fe95c857f569eac55f-X",
-        currency: currency,
+        currency: _wallet.currency,
         redirectUrl: "my_redirect_url",
         txRef: "unique_transaction_reference",
-        amount: "300.50",
+        amount: amount.value.text,
         customer: customer,
         paymentOptions: "card",
+        
         customization: Customization(title: "Xendly Test Payment"),
       );
 
@@ -414,6 +600,7 @@ class _AddMoneyState extends State<AddMoney> {
       } else {
         print("Flutterwave Standard User is FALSE, User CANCELLED Tx!");
       }
+       */
     } catch (err) {
       throw Exception(err);
     }
