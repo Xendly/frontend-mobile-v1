@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "302548435791",
+    "project_id": "xendly-729ce",
+    "storage_bucket": "xendly-729ce.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302548435791:android:a90aa213af73c375527b3a",
+        "android_client_info": {
+          "package_name": "com.xendly.xendly_pay"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302548435791-qr5u817gjpam827rlp5rkh2uvnjiu3b6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANxaOqUbh4Kas1TE0N_LQJk9XhBMcY-PY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302548435791-qr5u817gjpam827rlp5rkh2uvnjiu3b6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
