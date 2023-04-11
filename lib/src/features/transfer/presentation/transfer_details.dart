@@ -2,11 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:xendly_mobile/src/core/utilities/helpers/transactions_helper.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
+import 'package:xendly_mobile/src/domain/usecases/beneficiaries/delete_beneficiary.dart';
+import 'package:xendly_mobile/src/presentation/view_model/beneficiaries/delete_beneficiary_controller.dart';
 import 'package:xendly_mobile/src/presentation/widgets/inputs/xn_text_field.dart';
+import 'package:xendly_mobile/src/presentation/widgets/notifications/snackbar.dart';
 
 import '../../../config/routes.dart' as routes;
+import '../../../core/utilities/widgets/beneficiary_item.dart';
+import '../../../core/utilities/widgets/input_field.dart';
 import '../../../core/utilities/widgets/wallets_list.dart';
 import '../../../domain/usecases/beneficiaries/get_beneficiaries_usecase.dart';
 import '../../../domain/usecases/user/get_user_data_usecase.dart';
@@ -15,7 +21,6 @@ import '../../../presentation/view_model/beneficiaries/get_beneficiaries_control
 import '../../../presentation/view_model/user/get_user_data_controller.dart';
 import '../../../presentation/view_model/wallets/get_user_wallets_controller.dart';
 import '../../../presentation/widgets/dialogs/alert_dialog.dart';
-import '../../../presentation/widgets/list_items/list_item_one.dart';
 import '../../../presentation/widgets/title_bar.dart';
 
 class TransferDetails extends StatefulWidget {
@@ -29,11 +34,22 @@ class _TransferDetailsState extends State<TransferDetails> {
   TextEditingController narrationController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
 
-  String? beneficiaryId, fullName;
-  bool saveBeneficiary = false;
-  final ValueNotifier<String?> currencyNotifier = ValueNotifier("");
+  final NumberFormat _formatter = NumberFormat.currency(
+    decimalDigits: 2,
+    symbol: "",
+  );
 
-  final GetUserWalletsController getUserWalletsController = Get.put(
+  bool saveBeneficiary = false;
+
+  final fullname = "Get recipient name".obs;
+  final username = "".obs;
+  final benId = "".obs;
+  final usingBen = false.obs;
+
+  final ValueNotifier<String?> currencyNotifier = ValueNotifier("");
+  final ValueNotifier<String?> beneficiaryNotifier = ValueNotifier("");
+
+  final getUserWalletsController = Get.put(
     GetUserWalletsController(
       Get.find<GetUserWalletsUseCase>(),
     ),
@@ -45,9 +61,66 @@ class _TransferDetailsState extends State<TransferDetails> {
     ),
   );
 
+  void _submit() {
+    if (amountController.text.isEmpty) {
+      alertDialog(
+        context,
+        Iconsax.info_circle,
+        "Invalid Amount",
+        "No amount is provided",
+        () {},
+        XMColors.error0,
+      );
+    } else if (fullname.value == "" || fullname.value.isEmpty) {
+      alertDialog(
+        context,
+        Iconsax.info_circle,
+        "Invalid Name",
+        "Name is mandatory",
+        () {},
+        XMColors.error0,
+      );
+    } else if (usernameController.text.isEmpty) {
+      alertDialog(
+        context,
+        Iconsax.info_circle,
+        "Invalid Username",
+        "Username is mandatory",
+        () {},
+        XMColors.error0,
+      );
+    } else if (double.parse(amountController.value.text) >
+        selectedWalletAmount.toDouble()) {
+      alertDialog(
+        context,
+        Iconsax.info_circle,
+        "Insufficient Balance",
+        "Amount provided is greater than balance",
+        () {},
+        XMColors.error0,
+      );
+    } else {
+      Get.toNamed(
+        routes.confirmTransfer,
+        parameters: {
+          "username": usernameController.text,
+          "full_name": fullname.value,
+          "beneficiary": benId.value,
+          "amount": amountController.text,
+          "narration": narrationController.text.isEmpty
+              ? "Sent from ${usernameController.text}"
+              : narrationController.text,
+          "save_beneficiary": saveBeneficiary.toString(),
+          "currency": selectedWallet,
+        },
+      );
+    }
+  }
+
   final formatCurrency = NumberFormat.currency();
-  String? selectedWallet;
+  String selectedWallet = "Tap to select a wallet";
   List userWallets = [];
+  num selectedWalletAmount = 0.00;
 
   void getWallets() async {
     await getUserWalletsController.getUserWallets();
@@ -74,12 +147,10 @@ class _TransferDetailsState extends State<TransferDetails> {
         await controller.getUserData(
           usernameController.text.toLowerCase(),
         );
-        setState(() {
-          beneficiaryId = controller.beneficiaryId.value;
-          fullName = controller.fullName.value;
-        });
+        fullname.value = userInfoController.fullName.value;
+        benId.value = userInfoController.beneficiaryId.value;
       } catch (err) {
-        print(err.toString());
+        debugPrint(err.toString());
       }
     }
   }
@@ -89,7 +160,6 @@ class _TransferDetailsState extends State<TransferDetails> {
     super.initState();
     getWallets();
     beneficiaries.getBeneficiaries();
-    selectedWallet = "NGN";
   }
 
   @override
@@ -108,6 +178,7 @@ class _TransferDetailsState extends State<TransferDetails> {
           ),
           child: Form(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const TitleBar(
                   title: "Transfer Details",
@@ -175,7 +246,8 @@ class _TransferDetailsState extends State<TransferDetails> {
                     valueListenable: currencyNotifier,
                     builder: (context, value, _) {
                       return XnTextField(
-                        label: selectedWallet ?? "Balance to send from",
+                        label:
+                            "$selectedWallet (${_formatter.format(selectedWalletAmount.toDouble())})",
                         keyboardType: TextInputType.number,
                         enabled: false,
                         readOnly: true,
@@ -184,20 +256,82 @@ class _TransferDetailsState extends State<TransferDetails> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                XnTextField(
-                  label: "Username of recipient",
+                InputField(
+                  label: Obx(
+                    () {
+                      return usingBen.value == true
+                          ? Text(
+                              username.value,
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: XMColors.shade1,
+                              ),
+                            )
+                          : Text(
+                              "Enter recipient username",
+                              style: textTheme.bodyLarge?.copyWith(
+                                color: XMColors.shade1,
+                              ),
+                            );
+                    },
+                  ),
                   controller: usernameController,
                   keyboardType: TextInputType.text,
+                  enabled: usingBen.value == true ? false : true,
+                  readOnly: usingBen.value == true ? true : false,
+                  filled: usingBen.value == true ? true : false,
                 ),
                 const SizedBox(height: 24),
                 GestureDetector(
                   onTap: () => _getRecipientInfo(),
-                  child: XnTextField(
-                    label: fullName ?? "Get recipient's name",
+                  child: InputField(
+                    label: Obx(
+                      () {
+                        return usingBen.value == true
+                            ? Text(
+                                fullname.value,
+                                style: textTheme.bodyLarge?.copyWith(
+                                  color: XMColors.shade1,
+                                ),
+                              )
+                            : userInfoController.isLoading.value
+                                ? Text(
+                                    "Retrieving recipient name...",
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      color: XMColors.shade1,
+                                    ),
+                                  )
+                                : Text(
+                                    fullname.value,
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      color: XMColors.shade1,
+                                    ),
+                                  );
+                      },
+                    ),
                     enabled: false,
                     readOnly: true,
                     filled: true,
                   ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 2),
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: XMColors.shade3,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      "Tap to show the recipient name",
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: XMColors.shade3,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 XnTextField(
@@ -223,7 +357,7 @@ class _TransferDetailsState extends State<TransferDetails> {
                       onChanged: (value) {
                         setState(() => saveBeneficiary = value);
                       },
-                      value: saveBeneficiary ?? false,
+                      value: saveBeneficiary,
                       activeColor: XMColors.success1,
                       activeTrackColor: XMColors.success1,
                       inactiveThumbColor: XMColors.shade3,
@@ -233,35 +367,16 @@ class _TransferDetailsState extends State<TransferDetails> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () => Get.toNamed(
-                    routes.confirmTransfer,
-                    parameters: {
-                      "username": usernameController.text,
-                      "full_name": fullName!,
-                      "beneficiary": beneficiaryId!,
-                      "amount": amountController.text,
-                      "narration": narrationController.text,
-                      "save_beneficiary": saveBeneficiary.toString(),
-                      "currency": selectedWallet!,
-                    },
-                  ),
+                  onPressed: () => _submit(),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.only(bottom: 2),
                     fixedSize: const Size(0, 64),
                   ),
-                  child: Obx(() {
-                    return userInfoController.isLoading.value
-                        ? Text(
-                            "Retrieving Recipient Info...",
-                            style: textTheme.bodyLarge
-                                ?.copyWith(color: XMColors.shade6),
-                          )
-                        : Text(
-                            "Continue",
-                            style: textTheme.bodyLarge
-                                ?.copyWith(color: XMColors.shade6),
-                          );
-                  }),
+                  child: Text(
+                    "Continue",
+                    style:
+                        textTheme.bodyLarge?.copyWith(color: XMColors.shade6),
+                  ),
                 ),
               ],
             ),
@@ -287,6 +402,7 @@ class _TransferDetailsState extends State<TransferDetails> {
                     : ListTile(
                         onTap: () => setState(() {
                           selectedWallet = wallet['currency'].toString();
+                          selectedWalletAmount = wallet['balance'];
                           Get.back();
                         }),
                         leading: CircleAvatar(
@@ -346,6 +462,25 @@ class _TransferDetailsState extends State<TransferDetails> {
     );
   }
 
+  final deleteBeneficiaryController = Get.put(
+    DeleteBeneficiaryController(
+      Get.find<DeleteBeneficiaryUsecase>(),
+    ),
+  );
+
+  _deleteBeneficiary(int id) async {
+    try {
+      await deleteBeneficiaryController.deleteBeneficiary(id);
+    } catch (e) {
+      xnSnack(
+        "An error occurred",
+        e.toString(),
+        XMColors.error1,
+        Icons.cancel_outlined,
+      );
+    }
+  }
+
   selectBeneficiary() {
     final textTheme = Theme.of(context).textTheme;
 
@@ -390,8 +525,12 @@ class _TransferDetailsState extends State<TransferDetails> {
                           ? const Center(
                               child: CupertinoActivityIndicator(),
                             )
-                          : beneficiaries.data == []
-                              ? const Text("No Beneficiaries")
+                          : beneficiaries.data.isEmpty
+                              ? emptyData(
+                                  context,
+                                  "No Beneficiaries",
+                                  Icons.person_2_outlined,
+                                )
                               : ListView.separated(
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
@@ -401,13 +540,56 @@ class _TransferDetailsState extends State<TransferDetails> {
                                   itemBuilder: (_, index) {
                                     final beneficiary =
                                         beneficiaries.data[index];
-                                    return ListItemOne(
-                                      title: beneficiary['display_name'],
-                                      subtitle: beneficiary['beneficiary']
-                                              ['phone']
-                                          .toString(),
-                                      iconOne: Icons.person_2_outlined,
-                                      iconTwo: Iconsax.trash,
+
+                                    final loading = false.obs;
+
+                                    return Obx(
+                                      () => GestureDetector(
+                                        onTap: () {
+                                          fullname.value =
+                                              beneficiary['display_name'];
+                                          username.value =
+                                              beneficiary['beneficiary']
+                                                  ['username'];
+                                          usernameController.text =
+                                              beneficiary['beneficiary']
+                                                  ['username'];
+                                          benId.value =
+                                              beneficiary['beneficiary_id'];
+                                          usingBen.value = true;
+
+                                          Get.back();
+                                        },
+                                        child: BeneficiaryItem(
+                                          title: beneficiary['display_name'],
+                                          subtitle: beneficiary['beneficiary']
+                                                  ['phone']
+                                              .toString(),
+                                          iconOne: Icons.person_2_outlined,
+                                          delete: GestureDetector(
+                                            onTap: () async {
+                                              loading.value = true;
+                                              await _deleteBeneficiary(
+                                                int.parse(
+                                                  beneficiary['beneficiary_id'],
+                                                ),
+                                              );
+                                              // use this to remove from list
+                                              beneficiaries.data
+                                                  .removeAt(index);
+                                              loading.value = false;
+                                            },
+                                            child: loading.value == true
+                                                ? const CupertinoActivityIndicator(
+                                                    color: XMColors.error1,
+                                                  )
+                                                : const Icon(
+                                                    Iconsax.trash,
+                                                    color: XMColors.error1,
+                                                  ),
+                                          ),
+                                        ),
+                                      ),
                                     );
                                   },
                                 );

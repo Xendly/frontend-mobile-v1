@@ -46,7 +46,7 @@ class _ConfirmTransferState extends State<ConfirmTransfer> {
     fullName = Get.parameters['full_name']!;
     beneficiary = Get.parameters['beneficiary']!;
     amount = Get.parameters['amount']!;
-    narration = Get.parameters['narration']!;
+    narration = Get.parameters['narration'];
     saveBeneficiary = Get.parameters['save_beneficiary']!;
     currency = Get.parameters['currency']!;
   }
@@ -173,7 +173,7 @@ class _ConfirmTransferState extends State<ConfirmTransfer> {
 
   transactionPin() {
     final textTheme = Theme.of(context).textTheme;
-    final VerifyPinController verifyPin = Get.put(
+    final verifyPin = Get.put(
       VerifyPinController(
         Get.find<VerifyPinUseCase>(),
       ),

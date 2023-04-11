@@ -33,29 +33,16 @@ class TransactionListItem extends StatelessWidget {
           children: [
             CircleAvatar(
               radius: 20,
-              backgroundColor: status == "success"
+              backgroundColor: status == "credit"
                   ? XMColors.success0.withOpacity(0.1)
-                  : status == "pending"
-                      ? Colors.orange.shade400.withOpacity(0.1)
-                      : XMColors.error0.withOpacity(0.1),
+                  : XMColors.error0.withOpacity(0.1),
               child: theEntry == "credit"
-                  ? Icon(
-                      FlutterRemix.arrow_left_down_line,
-                      size: 22,
-                      color: status == "success"
-                          ? XMColors.success0
-                          : status == "pending"
-                              ? Colors.orange.shade400
-                              : XMColors.error0,
-                    )
-                  : Icon(
+                  ? const Icon(FlutterRemix.arrow_left_down_line,
+                      size: 22, color: XMColors.success0)
+                  : const Icon(
                       FlutterRemix.arrow_right_up_line,
                       size: 22,
-                      color: status == "success"
-                          ? XMColors.success0
-                          : status == "pending"
-                              ? Colors.orange.shade400
-                              : XMColors.error0,
+                      color: XMColors.error0,
                     ),
             ),
             const SizedBox(width: 14),
@@ -86,11 +73,9 @@ class TransactionListItem extends StatelessWidget {
             Text(
               _buildAmount(),
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                    color: status == "success"
+                    color: status == "credit"
                         ? XMColors.success0
-                        : status == "pending"
-                            ? Colors.orange.shade400
-                            : XMColors.error0,
+                        : XMColors.error0,
                     fontWeight: FontWeight.w600,
                   ),
             ),

@@ -49,13 +49,13 @@ class _TransactionsListState extends State<TransactionsList> {
                           amount:
                               "${transaction['currency'] == 'USD' ? '\$' : '₦'}${transaction['amount'].toString()}",
                           note: transaction['title'].toString(),
-                          status: capitalizeLetter(
-                              transaction['status'].toString()),
-                          statusColor: transaction['status'] == "success"
+                          status:
+                              capitalizeLetter(transaction['entry'].toString()),
+                          statusColor: transaction['entry'] == "credit"
                               ? XMColors.success0
-                              : transaction['status'] == "pending"
-                                  ? Colors.orange.shade400
-                                  : XMColors.error0,
+                              : transaction['entry'] == "debit"
+                                  ? XMColors.error0
+                                  : Colors.orange.shade400,
                           refId: transaction['reference'].toString(),
                           date: DateFormat.yMMMEd().format(
                             DateTime.parse(transaction['created_at']),
@@ -68,7 +68,7 @@ class _TransactionsListState extends State<TransactionsList> {
                           DateTime.parse(transaction['created_at']),
                         ),
                         amount: formatAmount(transaction['amount'].toString()),
-                        status: transaction['status'],
+                        status: transaction['entry'],
                         entry: transaction['entry'],
                       );
                     },

@@ -113,6 +113,7 @@ List<GetPage<dynamic>> getPages = [
     name: home,
     page: () => const Home(),
     bindings: [
+      AuthBindings(),
       WalletBindings(),
       TransactionBindings(),
       UserBindings(),
@@ -347,6 +348,7 @@ List<GetPage<dynamic>> getPages = [
       MiscBinding(),
       TransactionBindings(),
       WalletBindings(),
+      AuthBindings(),
     ],
   )
 ];

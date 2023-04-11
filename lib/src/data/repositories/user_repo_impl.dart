@@ -73,6 +73,30 @@ class UserRepoImpl implements UserRepository {
   }
 
   @override
+  Future<Either<Failure, UserEntity>> updateUsername(String? username) async {
+    try {
+      final result = await dataSource.updateUsername(username);
+      return Right(result.toEntity());
+    } on ServerException catch (failure) {
+      return Left(
+        ServerFailure(failure.error.message),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> updatePhone(String? phone) async {
+    try {
+      final result = await dataSource.updatePhone(phone);
+      return Right(result.toEntity());
+    } on ServerException catch (failure) {
+      return Left(
+        ServerFailure(failure.error.message),
+      );
+    }
+  }
+
+  @override
   Future<Either<Failure, UserEntity>> virtualAcctRepo(
     Map<String, dynamic> data,
   ) async {

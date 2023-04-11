@@ -146,3 +146,28 @@ Widget emptyTransactions(BuildContext context) {
     ),
   );
 }
+
+Widget emptyData(BuildContext context, String text, IconData icon) {
+  return SizedBox(
+    height: MediaQuery.of(context).size.height * 0.6,
+    width: double.infinity,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          size: 44,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          text,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
+}

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freshchat_sdk/freshchat_sdk.dart';
 import 'package:get/get.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
-import 'package:xendly_mobile/src/domain/usecases/auth/logout_usecase.dart';
-import 'package:xendly_mobile/src/presentation/view_model/auth/logout_view_model.dart';
 import 'package:xendly_mobile/src/presentation/widgets/list_items/list_item_five.dart';
 import 'package:xendly_mobile/src/presentation/widgets/new_title_bar.dart';
 
@@ -19,19 +18,20 @@ class MyProfile extends StatefulWidget {
 }
 
 class _MyProfileState extends State<MyProfile> {
-  final GetProfileController controller = Get.put(
+  final controller = Get.put(
     GetProfileController(Get.find<GetProfileUsecase>()),
   );
 
-  final LogoutViewModel logoutController = Get.put(
-    LogoutViewModel(
-      Get.find<LogOutUsecase>(),
-    ),
-  );
+  // final logoutController = Get.put(
+  //   LogoutViewModel(
+  //     Get.find<LogOutUsecase>(),
+  //   ),
+  // );
 
   void _logout() async {
     try {
-      logoutController.userLogout();
+      Freshchat.resetUser();
+      // logoutController.userLogout();
     } catch (err) {
       Get.snackbar("Error!", err.toString());
     }
@@ -188,7 +188,7 @@ class _MyProfileState extends State<MyProfile> {
               subtitle: "Got questions? Send us a message",
               prefix: Icons.question_answer_outlined,
               suffix: Icons.arrow_forward_ios_outlined,
-              action: () => Get.toNamed(routes.helpCenter),
+              action: () => Get.toNamed(routes.helpAndSupport),
             ),
             const SizedBox(height: 10),
             const ListItemFive(
@@ -197,14 +197,14 @@ class _MyProfileState extends State<MyProfile> {
               prefix: Icons.privacy_tip_outlined,
               suffix: Icons.arrow_forward_ios_outlined,
             ),
-            const SizedBox(height: 10),
-            ListItemFive(
-              title: "Logout",
-              subtitle: "Quick controls over notifications",
-              prefix: Icons.logout_rounded,
-              suffix: Icons.arrow_forward_ios_outlined,
-              action: () => _logout(),
-            ),
+            // const SizedBox(height: 10),
+            // ListItemFive(
+            //   title: "Logout",
+            //   subtitle: "Quick controls over notifications",
+            //   prefix: Icons.logout_rounded,
+            //   suffix: Icons.arrow_forward_ios_outlined,
+            //   action: () => _logout(),
+            // ),
           ],
         ),
       ),

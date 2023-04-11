@@ -9,6 +9,8 @@ abstract class UserRepository {
       Map<String, dynamic> data);
   Future<Either<Failure, UserEntity>> updateAddressRepo(
       Map<String, dynamic> data);
+  Future<Either<Failure, UserEntity>> updateUsername(String? username);
+  Future<Either<Failure, UserEntity>> updatePhone(String? phone);
   Future<Either<Failure, UserEntity>> getProfileRepo();
   Future<Either<Failure, UserEntity>> virtualAcctRepo(
     Map<String, dynamic> data,

@@ -31,7 +31,7 @@ class TransactionsController extends GetxController {
         },
       );
     } catch (error) {
-      print("error fetching data: $error");
+      print(error);
     } finally {
       isLoading.value = false;
     }

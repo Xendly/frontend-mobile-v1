@@ -27,8 +27,9 @@ class _ExchangeCashState extends State<ExchangeCash> {
     RateController(Get.find<RateUsecase>()),
   );
 
-  String? fromCurrency;
-  String? toCurrency;
+  // String? fromCurrency;
+  // String? toCurrency;
+
   var rate = 0.0;
   var parsedAmount = 0.0;
 
@@ -50,10 +51,8 @@ class _ExchangeCashState extends State<ExchangeCash> {
   void initState() {
     super.initState();
     amountController;
-    fromCurrency = "NGN";
-    toCurrency = "USD";
-    // fromCurrency = Get.parameters['from_currency']!;
-    // toCurrency = Get.parameters['to_currency']!;
+    // fromCurrency = "NGN";
+    // toCurrency = "USD";
   }
 
   @override
@@ -71,7 +70,11 @@ class _ExchangeCashState extends State<ExchangeCash> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    fetchRates(fromCurrency!, toCurrency!);
+    fetchRates(currencyController.fromCurrency.value,
+        currencyController.toCurrency.value);
+
+    print(
+        "${currencyController.fromCurrency.value}, ${currencyController.toCurrency.value}");
 
     const divider = Divider(
       thickness: 1,
@@ -143,12 +146,17 @@ class _ExchangeCashState extends State<ExchangeCash> {
                     ),
                     Align(
                       alignment: Alignment.center,
-                      child: Chip(
-                        padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
-                        backgroundColor: XMColors.primary0,
-                        label: Text(
-                          "${fromCurrency == 'NGN' ? '₦' : '\$'} 1 = ${toCurrency == 'NGN' ? '₦' : '\$'} ${rate.toString()}",
-                          style: textTheme.bodyMedium?.copyWith(
+                      child: GestureDetector(
+                        onTap: () {
+                          currencyController.switchCurrencies();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                              color: XMColors.primary0,
+                              borderRadius: BorderRadius.circular(50.0)),
+                          child: const Icon(
+                            Icons.swap_vert,
                             color: XMColors.shade6,
                           ),
                         ),
@@ -184,6 +192,26 @@ class _ExchangeCashState extends State<ExchangeCash> {
                   color: amountController.text.isEmpty
                       ? XMColors.shade3
                       : XMColors.shade0,
+                ),
+                const SizedBox(height: 38),
+                Row(
+                  children: [
+                    Text(
+                      "Exchange rate",
+                      style: textTheme.bodyMedium?.copyWith(),
+                    ),
+                    const SizedBox(width: 14),
+                    Chip(
+                      padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
+                      backgroundColor: XMColors.primary0,
+                      label: Text(
+                        "${currencyController.fromCurrency.value == 'NGN' ? '₦' : '\$'} 1 = ${currencyController.toCurrency.value == 'NGN' ? '₦' : '\$'} ${rate.toString()}",
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: XMColors.shade6,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 const Spacer(),
                 ElevatedButton(
@@ -238,8 +266,8 @@ class _ExchangeCashState extends State<ExchangeCash> {
                     ? const CupertinoActivityIndicator()
                     : ListTile(
                         onTap: () {
-                          currencyController
-                              .switchFromCurrencies(wallet['currency']);
+                          // currencyController
+                          //     .switchFromCurrencies(wallet['currency']);
                           Get.back();
                         },
                         leading: CircleAvatar(
@@ -304,13 +332,13 @@ class CurrencyController extends GetxController {
   var fromCurrency = "NGN".obs;
   var toCurrency = "USD".obs;
 
-  void switchFromCurrencies(String currency) {
-    fromCurrency.value = currency;
-
+  void switchCurrencies() {
     if (fromCurrency.value == "NGN") {
-      toCurrency.value = "USD";
-    } else if (fromCurrency.value == "USD") {
+      fromCurrency.value = "USD";
       toCurrency.value = "NGN";
+    } else if (fromCurrency.value == "USD") {
+      fromCurrency.value = "NGN";
+      toCurrency.value = "USD";
     }
   }
 }

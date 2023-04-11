@@ -5,6 +5,7 @@ class ListItemOne extends StatelessWidget {
   final String? title;
   final String? subtitle;
   final Function()? action;
+  final Function()? onPressed;
   final IconData? iconOne, iconTwo;
   final Color? iconColor;
 
@@ -13,6 +14,7 @@ class ListItemOne extends StatelessWidget {
     this.title,
     this.subtitle,
     this.action,
+    this.onPressed,
     this.iconOne,
     this.iconTwo,
     this.iconColor,
@@ -51,9 +53,12 @@ class ListItemOne extends StatelessWidget {
           ),
         ),
       ),
-      trailing: Icon(
-        iconTwo,
-        color: iconColor ?? XMColors.error1,
+      trailing: GestureDetector(
+        onTap: onPressed,
+        child: Icon(
+          iconTwo,
+          color: iconColor ?? XMColors.error1,
+        ),
       ),
     );
   }

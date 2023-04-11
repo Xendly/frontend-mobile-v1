@@ -26,9 +26,9 @@ import 'package:xendly_mobile/src/presentation/view_model/auth/verify_pin_contro
 class AuthBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => http.Client());
-    Get.lazyPut(() => AuthDataSourceImpl(Get.find<http.Client>()));
-    Get.lazyPut(() => AuthRepositoryImpl(Get.find<AuthDataSourceImpl>()));
+    Get.put(http.Client());
+    Get.put(AuthDataSourceImpl(Get.find<http.Client>()));
+    Get.put(AuthRepositoryImpl(Get.find<AuthDataSourceImpl>()));
     // >>> Login Binding <<< //
     Get.lazyPut(() => LoginUseCase(Get.find<AuthRepositoryImpl>()));
     Get.put(() => LoginViewModel(Get.find<LoginUseCase>()));
@@ -58,6 +58,6 @@ class AuthBindings extends Bindings {
     Get.put(() => ResendOtpController(Get.find<ResendOtpUsecase>()));
     // >>> logout binding <<< //
     Get.lazyPut(() => LogOutUsecase(Get.find<AuthRepositoryImpl>()));
-    Get.put(() => LogoutViewModel(Get.find<LogOutUsecase>()));
+    Get.lazyPut(() => LogoutViewModel(Get.find<LogOutUsecase>()));
   }
 }

@@ -50,4 +50,13 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+<!--    <provider-->
+<!--        android:name="androidx.core.content.FileProvider"-->
+<!--        android:authorities="com.example.demoapp.provider"-->
+<!--        android:exported="false"-->
+<!--        android:grantUriPermissions="true">-->
+<!--        <meta-data-->
+<!--            android:name="android.support.FILE_PROVIDER_PATHS"-->
+<!--            android:resource="@xml/freshchat_file_provider_paths" />-->
+<!--    </provider>-->
 </manifest>

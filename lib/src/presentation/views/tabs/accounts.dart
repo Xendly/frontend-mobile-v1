@@ -80,8 +80,8 @@ class _AccountsState extends State<Accounts> {
       appBar: const NewTitleBar(
         title: "Accounts",
         suffix: Icon(
-          Iconsax.setting_2,
-          size: 28,
+          Icons.swap_vertical_circle_rounded,
+          size: 26,
         ),
       ),
       body: SingleChildScrollView(
@@ -90,7 +90,7 @@ class _AccountsState extends State<Accounts> {
           children: [
             Container(
               color: XMColors.shade6,
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 26),
+              padding: const EdgeInsets.fromLTRB(18, 10, 18, 26),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -100,57 +100,73 @@ class _AccountsState extends State<Accounts> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          userWallets.isEmpty
-                              ? Text(
-                                  "0.00",
-                                  style: textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                )
-                              : Text(
-                                  selectedWallet == "NGN"
-                                      ? NumberFormat.currency(
-                                          locale: "en_NG",
-                                          symbol: "\u20A6",
-                                        ).format(
-                                          double.parse(
-                                            userWallets[0]["balance"]
-                                                .toString(),
-                                          ),
-                                        )
-                                      : NumberFormat.currency(
-                                          locale: "en_US",
-                                          symbol: "\u0024",
-                                        ).format(
-                                          double.parse(
-                                            userWallets[0]["balance"]
-                                                .toString(),
-                                          ),
-                                        ),
-                                  style: textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                          const SizedBox(height: 3),
-                          Row(
-                            children: [
-                              const Icon(
-                                Iconsax.eye_slash,
-                                color: XMColors.shade3,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 6),
-                              Text(
-                                selectedWallet == "NGN"
-                                    ? "NGN Balance"
-                                    : "USD Balance",
-                                style: textTheme.bodyText1?.copyWith(
-                                  color: XMColors.shade3,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
+                          Obx(
+                            () {
+                              return getUserWalletsController.isLoading.value
+                                  ? Text(
+                                      "---",
+                                      style: textTheme.headlineSmall?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  : Text(
+                                      selectedWallet ==
+                                              getUserWalletsController.data[0]
+                                                  ['currency']
+                                          ? NumberFormat.currency(
+                                              locale: "en_NG",
+                                              symbol: getUserWalletsController
+                                                              .data[0]
+                                                          ['currency'] ==
+                                                      "NGN"
+                                                  ? "\u20A6"
+                                                  : "\u0024",
+                                            ).format(
+                                              double.parse(
+                                                getUserWalletsController.data[0]
+                                                        ["balance"]
+                                                    .toString(),
+                                              ),
+                                            )
+                                          : NumberFormat.currency(
+                                              locale: "en_US",
+                                              symbol: getUserWalletsController
+                                                              .data[0]
+                                                          ['currency'] ==
+                                                      "NGN"
+                                                  ? "\u0024"
+                                                  : "\u20A6",
+                                            ).format(
+                                              double.parse(
+                                                getUserWalletsController.data[1]
+                                                        ["balance"]
+                                                    .toString(),
+                                              ),
+                                            ),
+                                      style: textTheme.headlineMedium,
+                                    );
+                            },
                           ),
+                          // const SizedBox(height: 3),
+                          // Row(
+                          //   children: [
+                          //     const Icon(
+                          //       Iconsax.eye_slash,
+                          //       color: XMColors.shade3,
+                          //       size: 18,
+                          //     ),
+                          //     const SizedBox(width: 6),
+                          //     Text(
+                          //       selectedWallet == "NGN"
+                          //           ? "NGN Balance"
+                          //           : "USD Balance",
+                          //       style: textTheme.bodyText1?.copyWith(
+                          //         color: XMColors.shade3,
+                          //         fontWeight: FontWeight.w500,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                         ],
                       ),
                       const CircleAvatar(

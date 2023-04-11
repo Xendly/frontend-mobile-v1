@@ -145,6 +145,70 @@ class UserDataSourceImpl implements UserDataSource {
     }
   }
 
+  @override
+  Future<UserModel> updateUsername(String? username) async {
+    String? token = await storage.read(key: "token");
+    String? deviceId = await storage.read(key: "device_id");
+
+    final response = await client.post(
+      Uri.parse(ApiUrls.updateUsername),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'x-session-device-id': deviceId!,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "username": username,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw ServerException(
+        WalletModel.fromJson(
+          json.decode(response.body),
+        ),
+      );
+    } else {
+      return UserModel.fromJson(
+        json.decode(response.body),
+      );
+    }
+  }
+
+  @override
+  Future<UserModel> updatePhone(String? phone) async {
+    String? token = await storage.read(key: "token");
+    String? deviceId = await storage.read(key: "device_id");
+
+    print("dm phone - $phone");
+
+    final response = await client.post(
+      Uri.parse(ApiUrls.updatePhone),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+        'x-session-device-id': deviceId!,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "phone": phone,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw ServerException(
+        WalletModel.fromJson(
+          json.decode(response.body),
+        ),
+      );
+    } else {
+      return UserModel.fromJson(
+        json.decode(response.body),
+      );
+    }
+  }
+
   // update the address details of the user
   @override
   Future<UserModel> updateAddress(Map<String, dynamic> data) async {

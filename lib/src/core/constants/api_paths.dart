@@ -1,6 +1,5 @@
 class ApiUrls {
   static const String baseUrl = 'https://xendly.up.railway.app';
-  static const String newBaseUrl = 'https://api.xendly.co';
   // static const String baseUrl = 'https://api.xendly.co';
 
   // >>> Authentication <<< //
@@ -10,6 +9,8 @@ class ApiUrls {
   static String loginAuth() => "$baseUrl/api/auth/login/authorize";
   static String forgotPassword() => "$baseUrl/api/auth/password/forgot";
   static String resetPassword = "$baseUrl/api/auth/password/reset";
+  static String updateUsername = "$baseUrl/api/users/update/username";
+  static String updatePhone = "$baseUrl/api/users/update/phone-number";
   static String virtualAccount() => "$baseUrl/api/users/virtual-account";
   static String createPin() => "$baseUrl/api/users/pin/create";
   static String verifyPin() => "$baseUrl/api/users/pin/verify";
@@ -45,6 +46,8 @@ class ApiUrls {
 
   static String bvnVerification = '$baseUrl/api/users/bvn-verification';
   static String addressUpdate = '$baseUrl/api/users/address';
+  static String deleteBeneficiary(int id) =>
+      '$baseUrl/api/beneficiaries/remove/$id';
 
   static String getUserData(String? username) {
     return '$baseUrl/api/users/info/username/$username';

@@ -4,7 +4,9 @@ import 'package:xendly_mobile/src/domain/entities/misc_entity.dart';
 
 abstract class BeneficiariesRepo {
   Future<Either<Failure, MiscEntity>> getBeneficiariesRepo();
+  Future<Either<Failure, MiscEntity>> deleteBeneficiaryRepo(int id);
 
   // bank beneficiaries
-  Future<Either<Failure, MiscEntity>> createBankBeneficiaryRepo(Map<String, dynamic> data);  
+  Future<Either<Failure, MiscEntity>> createBankBeneficiaryRepo(
+      Map<String, dynamic> data);
 }

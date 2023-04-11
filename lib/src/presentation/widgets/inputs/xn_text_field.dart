@@ -51,19 +51,19 @@ class XnTextField extends StatelessWidget {
       validator: validator,
       keyboardType: keyboardType,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      style: textTheme.bodyText1?.copyWith(
+      style: textTheme.bodyLarge?.copyWith(
         color: XMColors.shade1,
       ),
       enabled: enabled,
       decoration: InputDecoration(
         label: Text(
           label ?? "Your Name",
-          style: textTheme.bodyText1?.copyWith(
+          style: textTheme.bodyLarge?.copyWith(
             color: XMColors.shade1,
           ),
         ),
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        hintStyle: textTheme.bodyText1?.copyWith(color: XMColors.shade1),
+        hintStyle: textTheme.bodyLarge?.copyWith(color: XMColors.shade1),
         prefixText: prefixText ?? "",
         contentPadding: const EdgeInsets.fromLTRB(20, 22, 10, 22),
         // isDense: true,

@@ -48,7 +48,7 @@ class _EnterPINState extends State<EnterPIN> {
       try {
         await verifyPinController.verifyPin(data);
         if (verifyPinController.message.value == "Transaction pin verified") {
-          Get.toNamed(routes.home);
+          Get.offAndToNamed(routes.home);
         }
       } catch (error) {
         Get.snackbar("An error occured", error.toString());

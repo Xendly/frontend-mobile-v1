@@ -1,12 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
-import 'package:xendly_mobile/src/data/models/misc_model.dart';
-import 'package:xendly_mobile/src/presentation/widgets/list_items/list_item_one.dart';
-import 'package:get/get.dart';
 import 'package:xendly_mobile/src/domain/usecases/beneficiaries/get_beneficiaries_usecase.dart';
 import 'package:xendly_mobile/src/presentation/view_model/beneficiaries/get_beneficiaries_controller.dart';
 import 'package:xendly_mobile/src/presentation/widgets/title_bar.dart';
+
+import '../../../core/utilities/helpers/transactions_helper.dart';
+import '../../../core/utilities/widgets/beneficiary_item.dart';
+import '../../../domain/usecases/beneficiaries/delete_beneficiary.dart';
+import '../../view_model/beneficiaries/delete_beneficiary_controller.dart';
+import '../../widgets/notifications/snackbar.dart';
 
 class ManageBeneficiaries extends StatefulWidget {
   const ManageBeneficiaries({Key? key}) : super(key: key);
@@ -15,44 +20,27 @@ class ManageBeneficiaries extends StatefulWidget {
 }
 
 class _ManageBeneficiariesState extends State<ManageBeneficiaries> {
-  final GetBeneficiariesController controller = Get.put(
+  final beneficiaries = Get.put(
     GetBeneficiariesController(
       Get.find<GetBeneficiariesUsecase>(),
     ),
   );
 
-  List _beneficiaries = [];
-  bool _isLoading = true;
+  final deleteBeneficiaryController = Get.put(
+    DeleteBeneficiaryController(
+      Get.find<DeleteBeneficiaryUsecase>(),
+    ),
+  );
 
-  void fetchBeneficiaries() async {
+  _deleteBeneficiary(int id) async {
     try {
-      final result = controller.data;
-      setState(() {
-        _beneficiaries = result;
-        _isLoading = false;
-      });
-    } catch (err) {
-      setState(() => _isLoading = false);
-      debugPrint("error caught on rates - ${err.toString()}");
-    }
-  }
-
-  Widget showBeneficiaries() {
-    if (_isLoading == true) {
-      return const CircularProgressIndicator();
-    } else if (_beneficiaries.isEmpty) {
-      return const Text("No Beneficiaries");
-    } else {
-      return Column(
-        children: [
-          for (var i = 0; i <= 10; i++)
-            const ListItemOne(
-              title: "Shittu Hakeem",
-              subtitle: "+234 902 324 9586",
-              iconOne: Iconsax.add,
-              iconTwo: Iconsax.trash,
-            ),
-        ],
+      await deleteBeneficiaryController.deleteBeneficiary(id);
+    } catch (e) {
+      xnSnack(
+        "An error occurred",
+        e.toString(),
+        XMColors.error1,
+        Icons.cancel_outlined,
       );
     }
   }
@@ -60,7 +48,7 @@ class _ManageBeneficiariesState extends State<ManageBeneficiaries> {
   @override
   void initState() {
     super.initState();
-    fetchBeneficiaries();
+    beneficiaries.getBeneficiaries();
   }
 
   @override
@@ -82,8 +70,63 @@ class _ManageBeneficiariesState extends State<ManageBeneficiaries> {
               const TitleBar(
                 title: "Manage Beneficiaries",
               ),
-              const SizedBox(height: 46),
-              showBeneficiaries(),
+              const SizedBox(height: 40),
+              Obx(
+                () {
+                  return beneficiaries.isLoading.value
+                      ? const Center(
+                          child: CupertinoActivityIndicator(),
+                        )
+                      : beneficiaries.data.isEmpty
+                          ? emptyData(
+                              context,
+                              "No Beneficiaries",
+                              Icons.person_2_outlined,
+                            )
+                          : ListView.separated(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
+                              itemCount: beneficiaries.data.length,
+                              itemBuilder: (_, index) {
+                                final beneficiary = beneficiaries.data[index];
+                                final loading = false.obs;
+
+                                return Obx(
+                                  () => BeneficiaryItem(
+                                    title: beneficiary['display_name'],
+                                    subtitle: beneficiary['beneficiary']
+                                            ['phone']
+                                        .toString(),
+                                    iconOne: Icons.person_2_outlined,
+                                    delete: GestureDetector(
+                                      onTap: () async {
+                                        loading.value = true;
+                                        await _deleteBeneficiary(
+                                          int.parse(
+                                            beneficiary['beneficiary_id'],
+                                          ),
+                                        );
+                                        // use this to remove from list
+                                        beneficiaries.data.removeAt(index);
+                                        loading.value = false;
+                                      },
+                                      child: loading.value == true
+                                          ? const CupertinoActivityIndicator(
+                                              color: XMColors.error1,
+                                            )
+                                          : const Icon(
+                                              Iconsax.trash,
+                                              color: XMColors.error1,
+                                            ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                },
+              ),
             ],
           ),
         ),
