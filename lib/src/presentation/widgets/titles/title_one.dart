@@ -30,13 +30,11 @@ class TitleOne extends StatelessWidget {
             height: 24.0,
           ),
         const SizedBox(height: 16.0),
-        Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
-              'assets/images/xendly_logo.png',
-              width: 64.0,
-            ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.asset(
+            'assets/images/xendly_logo.png',
+            width: 64.0,
           ),
         ),
         const SizedBox(height: 16.0),
