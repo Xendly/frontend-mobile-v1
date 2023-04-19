@@ -17,29 +17,44 @@ class TitleOne extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: const Icon(
-            Iconsax.arrow_left,
-            size: 26,
+        if (Navigator.canPop(context))
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: const Icon(
+              Iconsax.arrow_left,
+              size: 26,
+            ),
+          )
+        else
+          const SizedBox(
+            height: 24.0,
+          ),
+        const SizedBox(height: 16.0),
+        Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.asset(
+              'assets/images/xendly_logo.png',
+              width: 64.0,
+            ),
           ),
         ),
-        const SizedBox(height: 76),
+        const SizedBox(height: 16.0),
         Text(
           title ?? "Title",
-          style: textTheme.headline3?.copyWith(
+          style: textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8.0),
         Text(
           subtitle ?? "Subtitle",
-          style: textTheme.bodyText1?.copyWith(
+          style: textTheme.bodyLarge?.copyWith(
             color: XMColors.shade2,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 38),
+        const SizedBox(height: 32.0),
       ],
     );
   }

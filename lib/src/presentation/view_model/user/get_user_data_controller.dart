@@ -54,6 +54,8 @@ class GetUserDataController extends GetxController with StateMixin {
     result.fold((failure) {
       printInfo(info: failure.message.toString());
       message.value = failure.message.toString();
+      beneficiaryId.value = "";
+      fullName.value = "";
       xnSnack(
         "Error!",
         failure.message.toString(),

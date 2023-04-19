@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -30,6 +32,7 @@ class TransferDetails extends StatefulWidget {
 }
 
 class _TransferDetailsState extends State<TransferDetails> {
+  Timer? searchOnStoppedTyping;
   TextEditingController amountController = TextEditingController();
   TextEditingController narrationController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
@@ -155,6 +158,16 @@ class _TransferDetailsState extends State<TransferDetails> {
     }
   }
 
+  _onChangeHandler(value) {
+    const duration = Duration(
+        seconds: 1); // set the duration that you want call search() after that.
+    if (searchOnStoppedTyping != null) {
+      setState(() => searchOnStoppedTyping?.cancel()); // clear timer
+    }
+    setState(() =>
+        searchOnStoppedTyping = Timer(duration, () => _getRecipientInfo()));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -183,8 +196,8 @@ class _TransferDetailsState extends State<TransferDetails> {
                 const TitleBar(
                   title: "Transfer Details",
                 ),
-                const SizedBox(height: 46),
-                GestureDetector(
+                const SizedBox(height: 24.0),
+                /* GestureDetector(
                   onTap: () => selectBeneficiary(),
                   child: Card(
                     elevation: 0, // set elevation to 0 to remove shadow
@@ -238,8 +251,8 @@ class _TransferDetailsState extends State<TransferDetails> {
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 24),
+                ),*/
+                // const SizedBox(height: 24),
                 GestureDetector(
                   onTap: () => showWallets(),
                   child: ValueListenableBuilder(
@@ -256,90 +269,131 @@ class _TransferDetailsState extends State<TransferDetails> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                InputField(
-                  label: Obx(
-                    () {
-                      return usingBen.value == true
-                          ? Text(
-                              username.value,
-                              style: textTheme.bodyLarge?.copyWith(
-                                color: XMColors.shade1,
-                              ),
-                            )
-                          : Text(
-                              "Enter recipient username",
-                              style: textTheme.bodyLarge?.copyWith(
-                                color: XMColors.shade1,
-                              ),
-                            );
-                    },
-                  ),
-                  controller: usernameController,
-                  keyboardType: TextInputType.text,
-                  enabled: usingBen.value == true ? false : true,
-                  readOnly: usingBen.value == true ? true : false,
-                  filled: usingBen.value == true ? true : false,
-                ),
-                const SizedBox(height: 24),
-                GestureDetector(
-                  onTap: () => _getRecipientInfo(),
-                  child: InputField(
-                    label: Obx(
-                      () {
-                        return usingBen.value == true
-                            ? Text(
-                                fullname.value,
-                                style: textTheme.bodyLarge?.copyWith(
-                                  color: XMColors.shade1,
-                                ),
-                              )
-                            : userInfoController.isLoading.value
-                                ? Text(
-                                    "Retrieving recipient name...",
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: XMColors.shade1,
-                                    ),
-                                  )
-                                : Text(
-                                    fullname.value,
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      color: XMColors.shade1,
-                                    ),
-                                  );
-                      },
-                    ),
-                    enabled: false,
-                    readOnly: true,
-                    filled: true,
-                  ),
-                ),
-                const SizedBox(height: 10),
+                Obx(() {
+                  return InputField(
+                    onChanged: _onChangeHandler,
+                    label: usingBen.value == true
+                        ? Text(
+                            username.value,
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: XMColors.shade1,
+                            ),
+                          )
+                        : Text(
+                            "Enter recipient username",
+                            style: textTheme.bodyLarge?.copyWith(
+                              color: XMColors.shade1,
+                            ),
+                          ),
+                    controller: usernameController,
+                    keyboardType: TextInputType.text,
+                    enabled: usingBen.value == true ? false : true,
+                    readOnly: usingBen.value == true ? true : false,
+                    filled: usingBen.value == true ? true : false,
+                  );
+                }),
+                // GestureDetector(
+                //   onTap: () => selectBeneficiary(),
+                //   child:
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  // mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 2),
-                      child: const Icon(
-                        Icons.info_outline,
-                        color: XMColors.shade3,
+                    TextButton.icon(
+                      onPressed: () => selectBeneficiary(),
+                      icon: const Icon(
+                        Icons.star,
                         size: 20,
+                        // color: XMColors.shade6,
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      "Tap to show the recipient name",
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: XMColors.shade3,
-                      ),
-                    ),
+                      label: const Text('Pick a Beneficiary'),
+                    )
+                    // Text(
+                    //   "Tap to show the recipient name",
+                    //   style: textTheme.bodyMedium?.copyWith(
+                    //     color: XMColors.shade3,
+                    //   ),
+                    // ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                // ),
+                const SizedBox(height: 4.0),
+                Obx(() {
+                  if (userInfoController.isLoading.value ||
+                      fullname.value.toLowerCase().contains('recipient name') ||
+                      fullname.value.isEmpty) {
+                    return const SizedBox(height: 0.0);
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      InputField(
+                        label: Text(
+                          fullname.value,
+                          style: textTheme.bodyLarge?.copyWith(
+                            color: XMColors.shade1,
+                          ),
+                        ),
+                        // label: Obx(
+                        //   () {
+                        //     return usingBen.value == true
+                        //         ? Text(
+                        //             fullname.value,
+                        //             style: textTheme.bodyLarge?.copyWith(
+                        //               color: XMColors.shade1,
+                        //             ),
+                        //           )
+                        //         : userInfoController.isLoading.value
+                        //             ? Text(
+                        //                 "Retrieving recipient name...",
+                        //                 style: textTheme.bodyLarge?.copyWith(
+                        //                   color: XMColors.shade1,
+                        //                 ),
+                        //               )
+                        //             : Text(
+                        //                 fullname.value,
+                        //                 style: textTheme.bodyLarge?.copyWith(
+                        //                   color: XMColors.shade1,
+                        //                 ),
+                        //               );
+                        //   },
+                        // ),
+                        enabled: false,
+                        readOnly: true,
+                        filled: true,
+                      ),
+                      const SizedBox(height: 24.0),
+                    ],
+                  );
+                }),
+
+                // const SizedBox(height: 10),
+                // Row(
+                //   children: [
+                //     Container(
+                //       margin: const EdgeInsets.only(top: 2),
+                //       child: const Icon(
+                //         Icons.info_outline,
+                //         color: XMColors.shade3,
+                //         size: 20,
+                //       ),
+                //     ),
+                //     const SizedBox(width: 6),
+                //     Text(
+                //       "Tap to show the recipient name",
+                //       style: textTheme.bodyMedium?.copyWith(
+                //         color: XMColors.shade3,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // const SizedBox(height: 16.0),
                 XnTextField(
                   label: "Amount to send",
                   controller: amountController,
                   keyboardType: TextInputType.number,
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 24.0),
                 XnTextField(
                   label: "Narration (Optional)",
                   controller: narrationController,

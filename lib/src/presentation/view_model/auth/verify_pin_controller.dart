@@ -59,7 +59,7 @@ class VerifyPinController extends GetxController with StateMixin {
       );
     }, (result) {
       message.value = result.message!;
-      retStatus.value = result.status!;
+      retStatus.value = result.status;
       print("pin res - ${result.status.toString()}");
     });
     isLoading.value = false;

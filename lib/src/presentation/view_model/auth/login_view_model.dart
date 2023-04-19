@@ -27,13 +27,13 @@ class LoginViewModel extends GetxController with StateMixin {
         Iconsax.info_circle,
       );
       if (failure.message == "Please verify your email") {
-        Get.toNamed(routes.verifyEmail, parameters: {
+        Get.offAndToNamed(routes.verifyEmail, parameters: {
           "email": data["email"],
         });
       }
     }, (result) {
       message.value = result.message!;
-      retStatus.value = result.status!;
+      retStatus.value = result.status;
       if (result.verifyOtpStatus == true) {
         Get.toNamed(routes.loginOtp, parameters: {
           "email": data["email"],

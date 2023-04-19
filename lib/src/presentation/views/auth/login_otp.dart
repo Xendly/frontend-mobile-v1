@@ -84,9 +84,11 @@ class _LoginOtpState extends State<LoginOtp> {
                 key: formKey,
                 child: PinCodeTextField(
                   length: 6,
+                  obscureText: true,
+                  blinkWhenObscuring: true,
                   onChanged: (value) {},
                   appContext: context,
-                  textStyle: textTheme.headline6?.copyWith(
+                  textStyle: textTheme.titleMedium?.copyWith(
                     color: XMColors.shade1,
                   ),
                   cursorColor: XMColors.primary,
@@ -96,17 +98,19 @@ class _LoginOtpState extends State<LoginOtp> {
                     data["email"] = email;
                     data["otp"] = value;
                   },
+                  errorTextSpace: 24.0,
                   validator: (value) => validateToken(value!),
                   pinTheme: PinTheme(
                     shape: PinCodeFieldShape.box,
                     borderRadius: BorderRadius.circular(8),
-                    fieldWidth: 54,
-                    fieldHeight: 56,
+                    fieldWidth: 48.0,
+                    fieldHeight: 50.0,
                     activeColor: XMColors.shade4,
                     selectedColor: XMColors.primary,
                     inactiveColor: XMColors.shade4,
                     activeFillColor: XMColors.shade6,
                     selectedFillColor: XMColors.shade6,
+                    fieldOuterPadding: const EdgeInsets.all(2.0),
                   ),
                   enablePinAutofill: true,
                   keyboardType: TextInputType.number,

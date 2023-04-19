@@ -24,26 +24,30 @@ class _HelpAndSupportState extends State<HelpAndSupport> {
 
   void freshchatConfig() async {
     // initialize freshchat
-    Freshchat.init(
-      'fc30a38c-24f5-40c0-9bd5-8a9b59873759',
-      '4e372778-88aa-4483-b6c3-2fceccd267d8',
-      'msdk.freshchat.com',
-      teamMemberInfoVisible: true,
-      cameraCaptureEnabled: true,
-      gallerySelectionEnabled: true,
-      responseExpectationEnabled: true,
-    );
+    try {
+      Freshchat.init(
+        'fc30a38c-24f5-40c0-9bd5-8a9b59873759',
+        '4e372778-88aa-4483-b6c3-2fceccd267d8',
+        'msdk.freshchat.com',
+        teamMemberInfoVisible: true,
+        cameraCaptureEnabled: true,
+        gallerySelectionEnabled: true,
+        responseExpectationEnabled: true,
+      );
 
-    final FreshchatUser user = FreshchatUser(
-      controller.data['id'],
-      controller.data['id'],
-    );
+      final FreshchatUser user = FreshchatUser(
+        controller.data['id'],
+        controller.data['id'],
+      );
 
-    user.setFirstName(controller.data['first_name']);
-    user.setLastName(controller.data['last_name']);
-    user.setEmail(controller.data['email']);
-    user.setPhone("+234", controller.data['phone']);
-    Freshchat.setUser(user);
+      user.setFirstName(controller.data['first_name']);
+      user.setLastName(controller.data['last_name']);
+      user.setEmail(controller.data['email']);
+      user.setPhone("+234", controller.data['phone']);
+      Freshchat.setUser(user);
+    } catch (e) {
+      printError(info: '$e');
+    }
   }
 
   @override
