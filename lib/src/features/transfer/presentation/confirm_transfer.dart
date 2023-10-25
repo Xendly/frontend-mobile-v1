@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/widgets/info_row.dart';
@@ -19,6 +20,7 @@ class ConfirmTransfer extends StatefulWidget {
 }
 
 class _ConfirmTransferState extends State<ConfirmTransfer> {
+  var formatter = NumberFormat.decimalPattern();
   String? username,
       fullName,
       beneficiary,
@@ -63,7 +65,7 @@ class _ConfirmTransferState extends State<ConfirmTransfer> {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             horizontal: 18,
             vertical: 24,
@@ -83,10 +85,12 @@ class _ConfirmTransferState extends State<ConfirmTransfer> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                "$amount$currency",
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+              FittedBox(
+                child: Text(
+                  "${formatter.format(double.tryParse(amount!) ?? 0)} $currency",
+                  style: textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -132,7 +136,8 @@ class _ConfirmTransferState extends State<ConfirmTransfer> {
                 XMColors.shade0,
                 context,
               ),
-              const Spacer(),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+              // const Spacer(),
               ElevatedButton(
                 onPressed: () => transactionPin(),
                 style: ElevatedButton.styleFrom(
@@ -212,72 +217,87 @@ class _ConfirmTransferState extends State<ConfirmTransfer> {
     showDialog(
         context: context,
         builder: (context) {
-          return Scaffold(
-            backgroundColor: XMColors.light,
-            extendBody: true,
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 24,
-                  horizontal: 18,
+          return AlertDialog(
+            // contentPadding: EdgeInsets.zero,
+            insetPadding: EdgeInsets.zero,
+            //  Scaffold(
+            //   backgroundColor: XMColors.light,
+            //   extendBody: true,
+            //   body: SafeArea(
+            //     child: Padding(
+            //       padding: const EdgeInsets.symmetric(
+            //         vertical: 24,
+            //         horizontal: 18,
+            //       ),
+            //       child:
+
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Transaction Pin",
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const TitleBar(
-                      title: "Transaction Pin",
+                const SizedBox(height: 34),
+                Form(
+                  key: formKey,
+                  child: PinCodeTextField(
+                    autoFocus: true,
+                    obscureText: true,
+                    blinkWhenObscuring: true,
+                    length: 4,
+                    appContext: context,
+                    textStyle: textTheme.titleMedium?.copyWith(
+                      color: XMColors.shade1,
                     ),
-                    const SizedBox(height: 34),
-                    Form(
-                      key: formKey,
-                      child: PinCodeTextField(
-                        length: 4,
-                        appContext: context,
-                        textStyle: textTheme.titleMedium?.copyWith(
-                          color: XMColors.shade1,
-                        ),
-                        cursorColor: XMColors.primary,
-                        cursorHeight: 17,
-                        controller: pinController,
-                        onSaved: (value) => pinData["pin"] = value,
-                        validator: (value) => validatePin(value!),
-                        pinTheme: PinTheme(
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(8),
-                          fieldWidth: 80,
-                          fieldHeight: 56,
-                          activeColor: XMColors.shade4,
-                          selectedColor: XMColors.primary,
-                          inactiveColor: XMColors.shade4,
-                          activeFillColor: XMColors.shade6,
-                          selectedFillColor: XMColors.shade6,
-                        ),
-                        enablePinAutofill: true,
-                        keyboardType: TextInputType.number,
-                        onChanged: (String value) {},
-                      ),
+                    cursorColor: XMColors.primary,
+                    cursorHeight: 17,
+                    controller: pinController,
+                    onSaved: (value) => pinData["pin"] = value,
+                    validator: (value) => validatePin(value!),
+                    pinTheme: PinTheme(
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(8),
+                      fieldWidth: 50.0,
+                      fieldHeight: 52.0,
+                      activeColor: XMColors.shade4,
+                      selectedColor: XMColors.primary,
+                      inactiveColor: XMColors.shade4,
+                      activeFillColor: XMColors.shade6,
+                      selectedFillColor: XMColors.shade6,
                     ),
-                    const SizedBox(height: 22),
-                    ElevatedButton(
-                      onPressed: () => confirmTransaction(),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.only(bottom: 2),
-                        fixedSize: const Size(0, 64),
-                      ),
-                      child: Text(
-                        verifyPin.isLoading.value
-                            ? "Processing..."
-                            : "Continue",
-                        style: textTheme.bodyLarge?.copyWith(
-                          color: XMColors.shade6,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
+                    enablePinAutofill: true,
+                    keyboardType: TextInputType.number,
+                    onChanged: (String value) {},
+                  ),
                 ),
-              ),
+                const SizedBox(height: 22),
+                Obx(() {
+                  return ElevatedButton(
+                    onPressed: () => verifyPin.isLoading.value
+                        ? () {}
+                        : confirmTransaction(),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.only(bottom: 2),
+                      fixedSize: const Size(0, 64),
+                    ),
+                    child: Text(
+                      verifyPin.isLoading.value ? "Processing..." : "Continue",
+                      style: textTheme.bodyLarge?.copyWith(
+                        color: XMColors.shade6,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  );
+                }),
+              ],
             ),
+
+            // ),
+            // ),
           );
         });
   }

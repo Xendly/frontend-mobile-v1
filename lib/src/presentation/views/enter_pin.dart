@@ -76,24 +76,27 @@ class _EnterPINState extends State<EnterPIN> {
       extendBody: true,
       backgroundColor: XMColors.light,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
+          // child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const TitleOne(
-                title: "Enter PIN Code",
+                title: "Enter Pin Code",
                 subtitle:
-                    "Use your PIN for easy login and confirm transactions",
+                    "Use your pin code for easy login and to confirm transactions",
               ),
               Form(
                 key: formKey,
                 child: PinCodeTextField(
                   length: 4,
+                  obscureText: true,
+                  blinkWhenObscuring: true,
                   onChanged: (value) {},
                   appContext: context,
-                  textStyle: textTheme.headline6?.copyWith(
+                  textStyle: textTheme.titleMedium?.copyWith(
                     color: XMColors.shade1,
                   ),
                   cursorColor: XMColors.primary,
@@ -101,11 +104,12 @@ class _EnterPINState extends State<EnterPIN> {
                   controller: pinController,
                   onSaved: (value) => data["pin"] = value,
                   validator: (value) => validatePin(value!),
+                  errorTextSpace: 24.0,
                   pinTheme: PinTheme(
                     shape: PinCodeFieldShape.box,
                     borderRadius: BorderRadius.circular(8),
-                    fieldWidth: 80,
-                    fieldHeight: 56,
+                    fieldWidth: 64.0,
+                    fieldHeight: 60.0,
                     activeColor: XMColors.shade4,
                     selectedColor: XMColors.primary,
                     inactiveColor: XMColors.shade4,
@@ -125,7 +129,7 @@ class _EnterPINState extends State<EnterPIN> {
                         )
                       : Text(
                           "Continue",
-                          style: textTheme.bodyText1?.copyWith(
+                          style: textTheme.bodyLarge?.copyWith(
                             color: XMColors.shade6,
                             fontWeight: FontWeight.w500,
                           ),
@@ -134,10 +138,10 @@ class _EnterPINState extends State<EnterPIN> {
                 backgroundColor: XMColors.primary,
                 action: () => _submit(),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 24.0),
               XnSolidButton(
-                backgroundColor: XMColors.error3,
-                borderColor: XMColors.error3,
+                backgroundColor: XMColors.error3.withOpacity(.2),
+                borderColor: XMColors.error3.withOpacity(.2),
                 content: Obx(() {
                   return logoutController.isLoading.value
                       ? const CupertinoActivityIndicator(
@@ -145,7 +149,7 @@ class _EnterPINState extends State<EnterPIN> {
                         )
                       : Text(
                           "Logout",
-                          style: textTheme.bodyText1?.copyWith(
+                          style: textTheme.bodyLarge?.copyWith(
                             color: XMColors.error0,
                             fontWeight: FontWeight.w600,
                           ),
@@ -156,6 +160,7 @@ class _EnterPINState extends State<EnterPIN> {
             ],
           ),
         ),
+        // ),
       ),
     );
   }

@@ -26,7 +26,7 @@ class LogoutViewModel extends GetxController with StateMixin {
       );
       // Get.toNamed(routes.signIn);
     }, (result) {
-      Get.toNamed(routes.signIn);
+      Get.offAllNamed(routes.signIn);
     });
     isLoading.value = false;
   }

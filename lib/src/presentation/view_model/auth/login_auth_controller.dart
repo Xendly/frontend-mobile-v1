@@ -67,7 +67,7 @@ class LoginAuthController extends GetxController with StateMixin {
       retStatus.value = result.status!;
       print("check for a pincode - ${result.data['has_pincode'].toString()}");
       if (result.data['has_pincode'] != false) {
-        Get.toNamed(routes.home);
+        Get.offAllNamed(routes.home);
       } else {
         Get.toNamed(routes.createPIN);
       }

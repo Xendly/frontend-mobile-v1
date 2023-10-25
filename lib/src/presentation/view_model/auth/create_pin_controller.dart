@@ -62,7 +62,7 @@ class CreatePinController extends GetxController with StateMixin {
       message.value = result.message!;
       retStatus.value = result.status!;
       print("data from create_pin - ${result.data.toString()}");
-      Get.toNamed(routes.home);
+      Get.offAllNamed(routes.home);
     });
     isLoading.value = false;
   }
