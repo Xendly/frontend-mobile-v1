@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
 
-// >>> Email Validation <<< //
 String? validateEmail(String value) {
   if (GetUtils.isNullOrBlank(value)!) {
-    return "Provide an Email Address";
+    return "Please enter an email address";
   } else if (!GetUtils.isEmail(value)) {
-    return "Provide a valid Email Address";
+    return "Please enter a valid email address";
   } else {
     return null;
   }
@@ -24,11 +23,11 @@ String? validatePassword(String value) {
   String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$';
   RegExp regExp = RegExp(pattern);
   if (GetUtils.isNullOrBlank(value)!) {
-    return "Provide a Secure Password";
+    return "Please enter a password";
   } else if (GetUtils.isLengthLessOrEqual(value, 7)) {
     return "Password must contain 8 characters";
   } else if (!regExp.hasMatch(value)) {
-    return "Include an uppercase, lowercase and a digit";
+    return "Must include uppercase, lowercase and digit";
   } else {
     return null;
   }

@@ -1,46 +1,24 @@
 import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 // import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:xendly_mobile/src/core/utilities/helpers/validator_helper.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
-import 'package:xendly_mobile/src/config/utilities.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
+import 'package:xendly_mobile/src/data/models/country_model.dart';
+import 'package:xendly_mobile/src/data/services/public_auth.dart';
+import 'package:xendly_mobile/src/data/services/user_auth.dart';
 import 'package:xendly_mobile/src/domain/usecases/auth/signup_usecase.dart';
 import 'package:xendly_mobile/src/presentation/view_model/auth/signup_view_model.dart';
-import 'package:xendly_mobile/src/presentation/widgets/buttons/solid_button.dart';
 import 'package:xendly_mobile/src/presentation/widgets/inputs/xn_text_field.dart';
 import 'package:xendly_mobile/src/presentation/widgets/notifications/snackbar.dart';
 import 'package:xendly_mobile/src/presentation/widgets/titles/title_one.dart';
-import 'package:xendly_mobile/src/presentation/widgets/widgets.dart';
-import 'package:xendly_mobile/src/presentation/widgets/widgets.dart';
-import 'package:xendly_mobile/src/presentation/widgets/bottomSheet.dart';
-import 'package:xendly_mobile/src/presentation/widgets/buttons/rounded.dart';
-import 'package:xendly_mobile/src/presentation/widgets/dropdown_input.dart';
-import 'package:xendly_mobile/src/presentation/widgets/password_input.dart';
-import 'package:xendly_mobile/src/presentation/widgets/safe_area.dart';
-import 'package:xendly_mobile/src/presentation/widgets/solid_button.dart';
-import 'package:xendly_mobile/src/presentation/widgets/tabPage_title.dart';
-import 'package:xendly_mobile/src/presentation/widgets/text_input.dart';
-import 'package:xendly_mobile/src/presentation/widgets/title_bar.dart';
-import 'package:xendly_mobile/src/presentation/widgets/wallets_item.dart';
-import 'package:xendly_mobile/src/data/models/beneficiary_model.dart';
-import 'package:xendly_mobile/src/data/models/country_model.dart';
-import 'package:xendly_mobile/src/data/models/transaction_model_old.dart';
-import 'package:xendly_mobile/src/data/models/user_model_old.dart';
-import 'package:xendly_mobile/src/data/models/wallet_model_old.dart';
-import 'package:xendly_mobile/src/data/services/beneficiary_auth.dart';
-import 'package:xendly_mobile/src/data/services/public_auth.dart';
-import 'package:xendly_mobile/src/data/services/transaction_service.dart';
-import 'package:xendly_mobile/src/data/services/user_auth.dart';
-import 'package:xendly_mobile/src/data/services/wallet_auth.dart';
-import 'package:xendly_mobile/src/presentation/views/verify_email.dart';
+
 import '../../../config/routes.dart' as routes;
+import '../../../theme/app_theme.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -102,7 +80,6 @@ class _SignUpState extends State<SignUp> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    // var = Get.put());
     return Scaffold(
       backgroundColor: XMColors.light,
       extendBody: true,
@@ -118,7 +95,7 @@ class _SignUpState extends State<SignUp> {
               children: [
                 const TitleOne(
                   title: "Create an account",
-                  subtitle: "Send and recieve global funds",
+                  subtitle: "Send and receive money quickly",
                 ),
                 Form(
                   key: formKey,
@@ -148,48 +125,54 @@ class _SignUpState extends State<SignUp> {
                         validator: (value) => validateEmail(value!),
                       ),
                       const SizedBox(height: 24),
-                      XnTextField(
-                        label: "Phone",
-                        keyboardType: TextInputType.phone,
-                        controller: phoneController,
-                        onSaved: (value) => data["phone"] = value!,
-                        validator: (value) => validatePhone(value!),
-                        prefixText: "+234 ",
+                      Row(
+                        children: [
+                          Container(
+                            height: 58,
+                            width: 76,
+                            decoration: BoxDecoration(
+                              color: XMColors.shade5,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: XMColors.shade4,
+                                width: 1.24,
+                                strokeAlign: BorderSide.strokeAlignCenter,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "+234",
+                                textAlign: TextAlign.center,
+                                style:
+                                    AppTextTheme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  color: XMColors.shade1,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 3,
+                            child: XnTextField(
+                              label: "Phone",
+                              keyboardType: TextInputType.phone,
+                              controller: phoneController,
+                              onSaved: (value) => data["phone"] = value!,
+                              validator: (value) => validatePhone(value!),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 24),
                       XnTextField(
                         label: "Username",
                         keyboardType: TextInputType.text,
                         controller: usernameController,
-                        onSaved: (value) => data["username"] = value!.toLowerCase(),
+                        onSaved: (value) =>
+                            data["username"] = value!.toLowerCase(),
                         validator: (value) => validateUsername(value!),
                       ),
-                      // XnTextField(
-                      //   label: "Date of Birth",
-                      //   keyboardType: TextInputType.datetime,
-                      //   controller: dobController,
-                      //   onSaved: (value) => data["dob"] = value!,
-                      //   validator: (value) => validateDob(value!),
-                      //   readOnly: true,
-                      //   onTap: () async {
-                      //     DateTime? pickDob = await showDatePicker(
-                      //       context: context,
-                      //       initialDate: DateTime.now(),
-                      //       firstDate: DateTime(
-                      //         2000,
-                      //       ),
-                      //       lastDate: DateTime(2101),
-                      //     );
-
-                      //     if (pickDob != null) {
-                      //       String formattedDate =
-                      //           DateFormat('yyyy-MM-dd').format(pickDob);
-                      //       setState(() => dobController.text = formattedDate);
-                      //     } else {
-                      //       return null;
-                      //     }
-                      //   },
-                      // ),
                       const SizedBox(height: 24),
                       XnTextField(
                         label: "Password",
@@ -203,7 +186,7 @@ class _SignUpState extends State<SignUp> {
                             _obscurePassword ? Iconsax.eye : Iconsax.eye_slash,
                         iconColor: XMColors.shade2,
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 28),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -221,91 +204,62 @@ class _SignUpState extends State<SignUp> {
                               },
                               activeColor: XMColors.shade0,
                               checkColor: XMColors.shade6,
-                              side: const BorderSide(
-                                color: XMColors.shade3,
-                              ),
+                              side: const BorderSide(color: XMColors.shade3),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5),
+                                borderRadius: BorderRadius.circular(6),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: RichText(
-                              text: TextSpan(
-                                text: "I agree to the ",
-                                style: textTheme.bodyText1?.copyWith(
-                                  color: XMColors.shade2,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text: "Privacy Policy",
-                                    style: textTheme.bodyText1?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: " and ",
-                                    style: textTheme.bodyText1?.copyWith(
-                                      color: XMColors.shade2,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: "Terms",
-                                    style: textTheme.bodyText1?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 28),
-                      XnSolidButton(
-                        content: Obx(() {
-                          return _signUpController.isLoading.value
-                              ? const CupertinoActivityIndicator(
-                                  color: XMColors.shade6,
-                                )
-                              : Text(
-                                  "Create Account",
-                                  style: textTheme.bodyText1?.copyWith(
-                                    color: XMColors.shade6,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                );
-                        }),
-                        backgroundColor: XMColors.primary,
-                        action: () => _submit(),
-                      ),
-                      const SizedBox(height: 26),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text.rich(
-                          TextSpan(
-                            text: "Already have an account? ",
-                            style: textTheme.bodyText1?.copyWith(
-                              color: XMColors.shade2,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          const SizedBox(width: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              TextSpan(
-                                text: "Login",
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () => Navigator.pushNamed(
-                                        context,
-                                        routes.signIn,
-                                      ),
-                                style: textTheme.bodyText1?.copyWith(
-                                  color: XMColors.shade0,
+                              Text(
+                                "I agree to Xendly's terms and conditions",
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: XMColors.shade1,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
                           ),
-                        ),
+                        ],
+                      ),
+                      const SizedBox(height: 28),
+                      FilledButton(
+                        onPressed: () => _submit(),
+                        style: AppButtonTheme.filledButtonStyle,
+                        child: Obx(() => _signUpController.isLoading.value
+                            ? const CupertinoActivityIndicator(
+                                color: AppColors.white,
+                              )
+                            : const Text("Create Account")),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Have an account?",
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: XMColors.shade1,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              routes.signIn,
+                            ),
+                            child: Text(
+                              "Sign In",
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: XMColors.primary0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

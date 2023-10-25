@@ -3,15 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:xendly_mobile/src/config/config.dart';
 import 'package:xendly_mobile/src/config/routes.dart' as routes;
+import 'package:xendly_mobile/src/config/routes/routes_pages.dart';
 import 'package:xendly_mobile/src/config/theme.dart';
 import 'package:xendly_mobile/src/core/utilities/services/notification_service.dart';
 import 'package:xendly_mobile/src/core/utilities/services/push_notification_service.dart';
 
+import 'firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  // request permissions
+  await Permission.camera.request();
+  await Permission.microphone.request();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   PushNotificationService.initialize();
   await NotificationService.initialize();
 
@@ -26,14 +37,12 @@ void main() async {
   String? deviceId = await storage.read(key: "device_id");
   String? token = await storage.read(key: "token");
   String? hasPincode = await storage.read(key: "has_pincode");
-  // String? isVerified = await storage.read(key: "is_verified");
 
   runApp(
     XendlyMobile(
       deviceId: deviceId ?? "",
       token: token ?? "",
       hasPincode: hasPincode ?? "",
-      // isVerified: isVerified ?? "",
     ),
   );
 }
@@ -41,14 +50,12 @@ void main() async {
 class XendlyMobile extends StatelessWidget {
   final String deviceId, token;
   final String hasPincode;
-  // , isVerified;
 
   const XendlyMobile({
     Key? key,
     required this.deviceId,
     required this.token,
     required this.hasPincode,
-    // required this.isVerified,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -56,11 +63,9 @@ class XendlyMobile extends StatelessWidget {
       title: 'Xendly',
       debugShowCheckedModeBanner: false,
       theme: themeData,
-      getPages: routes.getPages,
+      getPages: getPages,
       initialRoute: deviceId.isEmpty || token.isEmpty
           ? routes.signIn
-          // : isVerified != "true"
-          //     ? routes.verifyEmail
           : hasPincode == "false"
               ? routes.createPIN
               : routes.enterPIN,

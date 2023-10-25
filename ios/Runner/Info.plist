@@ -14,6 +14,11 @@
 	<string>MetaMap will use your location information to provide best possible verification experience.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>MetaMap will use your location information to provide best possible verification experience.</string>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

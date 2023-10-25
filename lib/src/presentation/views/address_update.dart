@@ -12,7 +12,9 @@ import 'package:xendly_mobile/src/presentation/widgets/inputs/app_dropdown.dart'
 import 'package:xendly_mobile/src/presentation/widgets/inputs/xn_text_field.dart';
 import 'package:xendly_mobile/src/presentation/widgets/title_bar.dart';
 
-import '../../config/routes.dart' as routes;
+import '../../core/utilities/helpers/youverify_sdk.dart';
+import '../../domain/usecases/user/get_profile_usecase.dart';
+import '../view_model/user/get_profile_controller.dart';
 
 class UpdateAddress extends StatefulWidget {
   const UpdateAddress({Key? key}) : super(key: key);
@@ -41,25 +43,62 @@ class _UpdateAddressState extends State<UpdateAddress> {
     "postal_code": "",
   };
 
-  @override
-  void initState() {
-    super.initState();
-    cityController;
-    addressController;
-    postalController;
+  // address update and youverify verification
+  final userInfo = Get.put(
+    GetProfileController(
+      Get.find<GetProfileUsecase>(),
+    ),
+  );
+
+  void accountVerification(String email) async {
+    final result = await youVerifyVForm(
+      context,
+      YouverifyVformData(
+        publicUrl: 'https://xendly.up.railway.app',
+        email: email,
+      ),
+    );
+    if (!mounted) return;
+    if (result == 'closed' && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your verification process was cancelled'),
+        ),
+      );
+    }
+    if (result == 'success' && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Your information has been submitted and is being processed',
+          ),
+        ),
+      );
+    }
+    debugPrint('main screen: $result');
   }
 
-  void _submit() async {
-    final isValid = formKey.currentState!.validate();
-    if (isValid) {
+  void _submit(String email) async {
+    final validate = formKey.currentState!;
+    if (validate.validate()) {
       formKey.currentState!.save();
       try {
         await controller.updateAddress(data);
-        Get.toNamed(routes.bvnVerification);
+        // call method after address is updated
+        accountVerification(email);
       } catch (error) {
-        debugPrint("an error occurred - ${error.toString()}");
+        debugPrint("An error occurred - ${error.toString()}");
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userInfo.getProfile();
+    cityController;
+    addressController;
+    postalController;
   }
 
   @override
@@ -156,7 +195,7 @@ class _UpdateAddressState extends State<UpdateAddress> {
                                 );
                         }),
                         backgroundColor: XMColors.primary,
-                        action: () => _submit(),
+                        action: () => _submit(userInfo.data['email']),
                       ),
                     ],
                   ),

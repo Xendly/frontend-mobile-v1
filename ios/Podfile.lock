@@ -3,6 +3,8 @@ PODS:
     - Flutter
   - device_info_plus (0.0.1):
     - Flutter
+  - FaceSDK (4.1.1217):
+    - RegulaCommon (= 6.6.203)
   - Firebase/CoreOnly (10.6.0):
     - FirebaseCore (= 10.6.0)
   - Firebase/Messaging (10.6.0):
@@ -36,6 +38,9 @@ PODS:
     - GoogleUtilities/UserDefaults (~> 7.8)
     - nanopb (< 2.30910.0, >= 2.30908.0)
   - Flutter (1.0.0)
+  - flutter_face_api (4.1.1):
+    - FaceSDK (= 4.1.1217)
+    - Flutter
   - flutter_inappwebview (0.0.1):
     - Flutter
     - flutter_inappwebview/Core (= 0.0.1)
@@ -87,6 +92,7 @@ PODS:
   - permission_handler_apple (9.0.4):
     - Flutter
   - PromisesObjC (2.2.0)
+  - RegulaCommon (6.6.203)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -100,18 +106,20 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
+  - flutter_face_api (from `.symlinks/plugins/flutter_face_api/ios`)
   - flutter_inappwebview (from `.symlinks/plugins/flutter_inappwebview/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - freshchat_sdk (from `.symlinks/plugins/freshchat_sdk/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
 SPEC REPOS:
   trunk:
+    - FaceSDK
     - Firebase
     - FirebaseCore
     - FirebaseCoreInternal
@@ -123,6 +131,7 @@ SPEC REPOS:
     - nanopb
     - OrderedSet
     - PromisesObjC
+    - RegulaCommon
     - Toast
 
 EXTERNAL SOURCES:
@@ -136,6 +145,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_messaging/ios"
   Flutter:
     :path: Flutter
+  flutter_face_api:
+    :path: ".symlinks/plugins/flutter_face_api/ios"
   flutter_inappwebview:
     :path: ".symlinks/plugins/flutter_inappwebview/ios"
   flutter_local_notifications:
@@ -147,7 +158,7 @@ EXTERNAL SOURCES:
   freshchat_sdk:
     :path: ".symlinks/plugins/freshchat_sdk/ios"
   path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/ios"
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   shared_preferences_foundation:
@@ -158,6 +169,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
   device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
+  FaceSDK: b62d5cefa0b62241be52f9874479b07bf506e8f8
   Firebase: f13680471b021937f2230ea8503c7809d8c29806
   firebase_core: 58542d7399889ebdbb034baa72d081e54c5c814d
   firebase_messaging: 01a8db2962f81ea190d08db767aba2e7e805e647
@@ -166,10 +178,11 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 13dde135fa0524e15bddb133ccc8465c53a1b3f3
   FirebaseMessaging: fd93783258c53ae5cdb9b41bf0c51606a677f2d5
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_inappwebview: bfd58618f49dc62f2676de690fc6dcda1d6c3721
+  flutter_face_api: 4d2bb71974c7965902a8abdcc02ddcf8b739f2fa
+  flutter_inappwebview: 4fe74e5e65809c3d363febfd9e2b21aa79bb0f1c
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
-  fluttertoast: eb263d302cc92e04176c053d2385237e9f43fad0
+  fluttertoast: fafc4fa4d01a6a9e4f772ecd190ffa525e9e2d9c
   freshchat_sdk: e0d147bf97dd199ba7d90ed1dc158295eb2a6ae7
   FreshchatSDK: aadd93fa40e364e8b69db97e93107088291e6d90
   GoogleDataTransport: ea169759df570f4e37bdee1623ec32a7e64e67c4
@@ -179,6 +192,7 @@ SPEC CHECKSUMS:
   path_provider_foundation: 37748e03f12783f9de2cb2c4eadfaa25fe6d4852
   permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
+  RegulaCommon: 5a2b9c9c24f45451532ee074e52a1450e328bd38
   shared_preferences_foundation: 297b3ebca31b34ec92be11acd7fb0ba932c822ca
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a

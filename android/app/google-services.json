@@ -29,6 +29,13 @@
             {
               "client_id": "302548435791-qr5u817gjpam827rlp5rkh2uvnjiu3b6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "302548435791-6ioj9mvakabk40l89tmgq7mhs0btq465.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.xendly.xendlyPay"
+              }
             }
           ]
         }

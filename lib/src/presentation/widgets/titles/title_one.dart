@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
-import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
 
 class TitleOne extends StatelessWidget {
   final String? title, subtitle;
@@ -17,42 +16,22 @@ class TitleOne extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (Navigator.canPop(context))
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const Icon(
-              Iconsax.arrow_left,
-              size: 26,
-            ),
-          )
-        else
-          const SizedBox(
-            height: 24.0,
-          ),
-        const SizedBox(height: 16.0),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(8.0),
-          child: Image.asset(
-            'assets/images/xendly_logo.png',
-            width: 64.0,
-          ),
-        ),
-        const SizedBox(height: 16.0),
+        const SizedBox(height: 22),
         Text(
           title ?? "Title",
-          style: textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w600,
+          style: textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
           ),
         ),
-        const SizedBox(height: 8.0),
+        const SizedBox(height: 4),
         Text(
           subtitle ?? "Subtitle",
-          style: textTheme.bodyLarge?.copyWith(
+          style: textTheme.bodyMedium?.copyWith(
             color: XMColors.shade2,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 32.0),
+        const SizedBox(height: 34),
       ],
     );
   }
