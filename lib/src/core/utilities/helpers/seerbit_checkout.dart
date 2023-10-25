@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:xendly_mobile/src/config/routes.dart';
 
 Future<String> seerbitCheckout(BuildContext ctx, SeerbitData data) async {
   if (num.tryParse(data.amount) == null) {
@@ -159,7 +160,7 @@ class _SeerBitCheckoutScreenState extends State<SeerBitCheckoutScreen> {
           print('Complete: $response');
         }
         // handle transaction complete event here
-        Navigator.pop(context, response);
+        Navigator.popAndPushNamed(context, home);
       },
       // ),
     )
@@ -172,6 +173,7 @@ class _SeerBitCheckoutScreenState extends State<SeerBitCheckoutScreen> {
           print('Close: $response');
         }
         // handle transaction close event here
+        Navigator.popAndPushNamed(context, home);
       },
     )
     ..loadHtmlString(html);

@@ -1,9 +1,6 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutterwave_standard/flutterwave.dart';
+
 import 'package:http/http.dart' as http;
-import 'package:xendly_mobile/src/data/models/country_model.dart';
 import 'package:xendly_mobile/src/data/models/virtual_account.dart';
 import 'package:xendly_mobile/src/data/services/token_storage.dart';
 

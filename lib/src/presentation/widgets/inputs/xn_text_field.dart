@@ -3,18 +3,15 @@ import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
 
 class XnTextField extends StatelessWidget {
-  final Function()? iconTap;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
-  final Function(String?)? onSaved, onChanged;
-  final bool? obscureContent, enabled, filled;
+  final bool? obscureContent, enabled, filled, readOnly;
   final String? Function(String?)? validator;
-  final Function()? onTap;
-  final bool? readOnly;
   final String? label;
   final IconData? icon;
   final Color? iconColor, fillColor;
-  final String? prefixText;
+  final Function(String?)? onSaved, onChanged;
+  final Function()? iconTap, onTap;
 
   const XnTextField({
     Key? key,
@@ -33,7 +30,6 @@ class XnTextField extends StatelessWidget {
     this.readOnly,
     this.label,
     this.iconColor,
-    this.prefixText,
   }) : super(key: key);
 
   @override
@@ -51,64 +47,32 @@ class XnTextField extends StatelessWidget {
       validator: validator,
       keyboardType: keyboardType,
       autovalidateMode: AutovalidateMode.onUserInteraction,
-      style: textTheme.bodyLarge?.copyWith(
+      style: textTheme.bodyMedium?.copyWith(
         color: XMColors.shade1,
       ),
       enabled: enabled,
       decoration: InputDecoration(
-        label: Text(
-          label ?? "Your Name",
-          style: textTheme.bodyLarge?.copyWith(
-            color: XMColors.shade1,
+        label: Padding(
+          padding: const EdgeInsets.only(left: 18, bottom: 1),
+          child: Text(
+            label!,
+            style: textTheme.bodyMedium?.copyWith(
+              color: XMColors.shade1,
+            ),
           ),
         ),
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        hintStyle: textTheme.bodyLarge?.copyWith(color: XMColors.shade1),
-        prefixText: prefixText ?? "",
-        contentPadding: const EdgeInsets.fromLTRB(20, 22, 10, 22),
-        // isDense: true,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: XMColors.shade4,
-            width: 1.4,
-            strokeAlign: BorderSide.strokeAlignCenter,
-          ),
-        ),
-        filled: filled,
-        fillColor: fillColor,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: XMColors.shade0,
-            width: 1.4,
-            strokeAlign: BorderSide.strokeAlignCenter,
-          ),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: XMColors.error0,
-            width: 1.4,
-            strokeAlign: BorderSide.strokeAlignCenter,
-          ),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: XMColors.error0,
-            width: 1.4,
-            strokeAlign: BorderSide.strokeAlignCenter,
-          ),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(
-            color: XMColors.shade4,
-            width: 1.4,
-            strokeAlign: BorderSide.strokeAlignCenter,
-          ),
-        ),
+        hintStyle: textTheme.bodyMedium?.copyWith(color: XMColors.shade1),
+        prefix: const Padding(padding: EdgeInsets.only(left: 18)),
+        contentPadding: const EdgeInsets.symmetric(vertical: 20),
+        isDense: true,
+        filled: filled ?? true,
+        fillColor: fillColor ?? XMColors.shade5,
+        enabledBorder: fieldBorder(XMColors.shade4),
+        focusedBorder: fieldBorder(XMColors.primary0),
+        errorBorder: fieldBorder(XMColors.error0),
+        focusedErrorBorder: fieldBorder(XMColors.error0),
+        disabledBorder: fieldBorder(XMColors.shade4),
         suffixIcon: GestureDetector(
           onTap: iconTap ?? () {},
           child: Icon(
@@ -117,9 +81,21 @@ class XnTextField extends StatelessWidget {
             size: 22,
           ),
         ),
-        errorStyle: textTheme.bodyText1?.copyWith(
+        errorStyle: textTheme.bodyMedium?.copyWith(
           color: XMColors.error0,
         ),
+      ),
+    );
+  }
+
+  // border customization
+  OutlineInputBorder fieldBorder(Color color) {
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(
+        color: color,
+        width: 1.24,
+        strokeAlign: BorderSide.strokeAlignCenter,
       ),
     );
   }

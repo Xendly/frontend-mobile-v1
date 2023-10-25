@@ -1,15 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutterwave_standard/flutterwave.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
+import 'package:xendly_mobile/src/data/models/beneficiary_model.dart';
 import 'package:xendly_mobile/src/presentation/widgets/buttons/rounded.dart';
 import 'package:xendly_mobile/src/presentation/widgets/dual_texts.dart';
 import 'package:xendly_mobile/src/presentation/widgets/title_bar.dart';
-import 'package:xendly_mobile/src/data/models/beneficiary_model.dart';
-import 'package:xendly_mobile/src/data/services/public_auth.dart';
 
 class SendMoney extends StatefulWidget {
   const SendMoney({Key? key}) : super(key: key);
@@ -608,68 +606,5 @@ class _SendMoneyState extends State<SendMoney> {
         );
       },
     );
-  }
-
-  final _publicAuth = Get.put(PublicAuth());
-  checkFwSetup() async {
-    try {
-      final style = FlutterwaveStyle(
-        appBarText: "My Standard Blue",
-        buttonColor: const Color(0xffd0ebff),
-        appBarIcon: const Icon(
-          Icons.message,
-          color: Color(0xffd0ebff),
-        ),
-        buttonTextStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        appBarColor: const Color(0xffd0ebff),
-        dialogCancelTextStyle: const TextStyle(
-          color: Colors.redAccent,
-          fontSize: 18,
-        ),
-        dialogContinueTextStyle: const TextStyle(
-          color: Colors.blue,
-          fontSize: 18,
-        ),
-      );
-
-      final Customer customer = Customer(
-        name: "Thor Odinson",
-        phoneNumber: "+2348134578903",
-        email: "sonofodin@fillnoo.com",
-      );
-
-      final Flutterwave flutterwave = Flutterwave(
-        isTestMode: false,
-        context: context,
-        style: style,
-        publicKey: "FLWPUBK_TEST-9da57004452405fe95c857f569eac55f-X",
-        currency: currency,
-        redirectUrl: "my_redirect_url",
-        txRef: "unique_transaction_reference",
-        amount: "300.50",
-        customer: customer,
-        paymentOptions: "card",
-        customization: Customization(title: "Xendly Test Payment"),
-      );
-
-      final ChargeResponse response = await flutterwave.charge();
-      if (response != null) {
-        print("Flutterwave Standard User is TRUE, User PROCEED with Tx!");
-        print(response.toJson());
-        if (response.success == true) {
-          print("Flutterwave Standard is TRUE, Tx might be a SUCCESS!");
-        } else {
-          print("Flutterwave Standard is FALSE, Tx is defintely a FAILURE!");
-        }
-      } else {
-        print("Flutterwave Standard User is FALSE, User CANCELLED Tx!");
-      }
-    } catch (err) {
-      throw Exception(err);
-    }
   }
 }

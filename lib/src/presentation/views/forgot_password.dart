@@ -9,6 +9,8 @@ import 'package:xendly_mobile/src/presentation/widgets/inputs/xn_text_field.dart
 import 'package:xendly_mobile/src/presentation/widgets/titles/title_one.dart';
 
 import '../../config/routes.dart' as routes;
+import '../../core/constants/widget_constants.dart';
+import '../../theme/app_theme.dart';
 import '../widgets/notifications/snackbar.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -61,58 +63,47 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
     return Scaffold(
       backgroundColor: XMColors.light,
-      extendBody: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 22,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const TitleOne(
-                  title: "Reset Password",
-                  subtitle: "Recover your password via Email",
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 22,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // page title
+              const TitleOne(
+                title: "Forgot Password",
+                subtitle: "Recover your password",
+              ),
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    XnTextField(
+                      label: "Email",
+                      keyboardType: TextInputType.emailAddress,
+                      controller: emailController,
+                      onSaved: (value) => data["email"] = value!,
+                      validator: (value) => validateEmail(value!),
+                    ),
+                    const SizedBox(height: 26),
+                    FilledButton(
+                      onPressed: () => _submit(),
+                      style: AppButtonTheme.filledButtonStyle,
+                      child: Obx(() => _controller.isLoading.value
+                          ? const CupertinoActivityIndicator(
+                              color: AppColors.white,
+                            )
+                          : const Text("Continue")),
+                    ),
+                    const SizedBox(height: 20),
+                    WidgetConstants.backToLogin(context),
+                  ],
                 ),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      XnTextField(
-                        label: "Email",
-                        keyboardType: TextInputType.emailAddress,
-                        controller: emailController,
-                        onSaved: (value) => data["email"] = value!,
-                        validator: (value) => validateEmail(value!),
-                      ),
-                      const SizedBox(height: 25),
-                      ElevatedButton(
-                        onPressed: () => _submit(),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(bottom: 2),
-                          fixedSize: const Size(0, 64),
-                        ),
-                        child: Obx(
-                          () {
-                            return _controller.isLoading.value
-                                ? const CupertinoActivityIndicator(
-                                    color: XMColors.shade6,
-                                  )
-                                : Text(
-                                    "Send Code",
-                                    style: textTheme.bodyLarge
-                                        ?.copyWith(color: XMColors.shade6),
-                                  );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

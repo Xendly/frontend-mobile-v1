@@ -1,15 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xendly.xendly_pay">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />
+    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />
 
     <application
-        android:label="xendly_mobile"
+        android:label="Xendly"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -50,13 +51,4 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
-<!--    <provider-->
-<!--        android:name="androidx.core.content.FileProvider"-->
-<!--        android:authorities="com.example.demoapp.provider"-->
-<!--        android:exported="false"-->
-<!--        android:grantUriPermissions="true">-->
-<!--        <meta-data-->
-<!--            android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--            android:resource="@xml/freshchat_file_provider_paths" />-->
-<!--    </provider>-->
 </manifest>

@@ -1,17 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-// import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:xendly_mobile/src/core/constants.dart';
+import 'package:xendly_mobile/src/core/constants/widget_constants.dart';
 import 'package:xendly_mobile/src/core/utilities/interfaces/colors.dart';
+import 'package:xendly_mobile/src/core/utilities/interfaces/iconsax_icons.dart';
 import 'package:xendly_mobile/src/domain/usecases/auth/reset_password_usecase.dart';
 import 'package:xendly_mobile/src/presentation/view_model/auth/reset_password_controller.dart';
-import 'package:xendly_mobile/src/presentation/widgets/password_input.dart';
-import 'package:xendly_mobile/src/presentation/widgets/text_input.dart';
-import 'package:xendly_mobile/src/presentation/widgets/widgets.dart';
 
 import '../../core/utilities/helpers/validator_helper.dart';
+import '../../theme/app_theme.dart';
+import '../widgets/inputs/xn_text_field.dart';
 import '../widgets/notifications/snackbar.dart';
+import '../widgets/titles/title_one.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
@@ -70,126 +71,61 @@ class _ResetPasswordState extends State<ResetPassword> {
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: XMColors.light,
-      extendBody: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 22,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                pageLabel("Reset Password", context),
-                const SizedBox(height: 30),
-                heading(
-                  "Reset Your Password",
-                  XMColors.dark,
-                  26,
-                  TextAlign.left,
-                  FontWeight.w800,
+          padding: EdgeInsets.symmetric(
+            horizontal: Constants.horizontalPadding,
+            vertical: 22,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const TitleOne(
+                title: "Reset Password",
+                subtitle: "Enter a new password",
+              ),
+              Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    XnTextField(
+                      label: "Verification Code",
+                      keyboardType: TextInputType.number,
+                      controller: emailController,
+                      onSaved: (value) => {
+                        data["token"] = value,
+                        data["email"] = Get.parameters["email"],
+                      },
+                      validator: (value) => validateToken(value!),
+                    ),
+                    const SizedBox(height: 22),
+                    XnTextField(
+                      label: "Your New Password",
+                      keyboardType: TextInputType.visiblePassword,
+                      controller: passwordController,
+                      onSaved: (value) => data["password"] = value!,
+                      validator: (value) => validatePassword(value!),
+                      iconTap: togglePassword,
+                      obscureContent: _obscureText ? true : false,
+                      icon: _obscureText ? Iconsax.eye : Iconsax.eye_slash,
+                      iconColor: XMColors.shade2,
+                    ),
+                    const SizedBox(height: 26),
+                    FilledButton(
+                      onPressed: () => _submit(),
+                      style: AppButtonTheme.filledButtonStyle,
+                      child: Obx(() => _controller.isLoading.value
+                          ? const CupertinoActivityIndicator(
+                              color: AppColors.white,
+                            )
+                          : const Text("Proceed")),
+                    ),
+                    const SizedBox(height: 20),
+                    WidgetConstants.backToLogin(context),
+                  ],
                 ),
-                const SizedBox(height: 1),
-                body(
-                  "Enter your email to recover password",
-                  XMColors.gray,
-                  16,
-                  TextAlign.left,
-                  FontWeight.w500,
-                ),
-                const SizedBox(height: 26),
-                Form(
-                  key: formKey,
-                  child: Column(
-                    children: [
-                      TextInput(
-                        readOnly: false,
-                        label: "Token Code",
-                        hintText: "0000",
-                        inputType: TextInputType.number,
-                        borderRadius: BorderRadius.circular(10),
-                        controller: emailController,
-                        onSaved: (value) => {
-                          data["token"] = value,
-                          data["email"] = Get.parameters["email"],
-                        },
-                        validator: (value) {
-                          return validateToken(value!);
-                        },
-                      ),
-                      const SizedBox(height: 25),
-                      PasswordInput(
-                        label: "Password for Security",
-                        hintText: "*******",
-                        controller: passwordController,
-                        onSaved: (value) => data["password"] = value!,
-                        validator: (value) {
-                          return validatePassword(value!);
-                        },
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 17),
-                          child: GestureDetector(
-                            onTap: togglePassword,
-                            child: _obscureText
-                                ? SvgPicture.asset(
-                                    "assets/icons/eye.svg",
-                                    width: 22,
-                                    height: 22,
-                                  )
-                                : SvgPicture.asset(
-                                    "assets/icons/eye-slash.svg",
-                                    width: 22,
-                                    height: 22,
-                                  ),
-                          ),
-                        ),
-                        obscureText: _obscureText ? true : false,
-                      ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
-                        onPressed: () => _submit(),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.only(bottom: 2),
-                          fixedSize: const Size(0, 64),
-                        ),
-                        child: Obx(
-                          () {
-                            return _controller.isLoading.value
-                                ? const CupertinoActivityIndicator(
-                                    color: XMColors.shade6,
-                                  )
-                                : Text(
-                                    "Confirm Reset",
-                                    style: textTheme.bodyLarge
-                                        ?.copyWith(color: XMColors.shade6),
-                                  );
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      Align(
-                        alignment: Alignment.center,
-                        child: GestureDetector(
-                          onTap: () => {
-                            Navigator.pop(
-                              context,
-                            ),
-                          },
-                          child: body(
-                            "Return to the Login",
-                            XMColors.accent,
-                            16,
-                            TextAlign.center,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
